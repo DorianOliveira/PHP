@@ -100,7 +100,7 @@ $objs = array();
 
 $objs[] = $teste;
 $objs[] = $teste2;
-$objs[] = $teste2;
+$objs[] = $teste3;
 
 header('Content-Type: application/json; charset=ISO-8859-1');
 
@@ -110,4 +110,21 @@ header('Content-Type: application/json; charset=ISO-8859-1');
 echo JsonHandler :: JsonParseObjectList($objs);
 
 ?>
+<script>
+	//Exemplo javascript com jQuery
+
+	jQuery(function(){
+		jQuery.get('reflection-json.php', function(data){ 
+
+		   for(var item in data)
+		   {
+		        var current_item = data[item];
+		          
+		        console.log(current_item.name);
+		        console.log(current_item.id);
+		        console.log(current_item.idade);  
+		   }
+		});
+	});
+</script>
 

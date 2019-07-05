@@ -1,32 +1,59 @@
 <?php
-function getJson($obj, $fields=array())
+
+class JsonHandler
 {
-    $reflection = new ReflectionClass($obj);
 
-    $props = $reflection -> getProperties();
+	public static function JsonParseObject($obj, $fields=array())
+	{
+	    
+	    $array_json = JsonHandler :: CreateArrayProperties($obj, $fields);
+	    return json_encode( $array_json);
+	}
 
-    $array_json = array();
+	private static function CreateArrayProperties($obj, $fields = array())
+	{
+		$reflection = new ReflectionClass($obj);
+
+	    $props = $reflection -> getProperties();
+
+	    $array_json = array();
 
 
-    foreach($props as $prop)
-    {   
-    	$valid_property = true;
+	    foreach($props as $prop)
+	    {   
+	    	$valid_property = true;
 
-    	if(is_array($fields) && count($fields) > 0)
-    	{
-    		if(!in_array($prop -> getName(), $fields))
-    			$valid_property = false;
-    	}
-    
-    	if($valid_property)
-    	{
-    		$prop -> setAccessible(true);
-	  		$array_json[$prop -> getName()] = $prop -> getValue($obj);		
-    	}
-    }
+	    	if(is_array($fields) && count($fields) > 0)
+	    	{
+	    		if(!in_array($prop -> getName(), $fields))
+	    			$valid_property = false;
+	    	}
+	    
+	    	if($valid_property)
+	    	{
+	    		$prop -> setAccessible(true);
+		  		$array_json[$prop -> getName()] = $prop -> getValue($obj);		
+	    	}
+	    }
 
-    return json_encode($array_json);
+	    return $array_json;
+
+	}
+
+	public static function JsonParseObjectList($listObj, $fields=array())
+	{
+		$listJson = array();
+
+		$counter_item = 1;
+		foreach($listObj as $obj)
+			$listJson['item' . $counter_item ++] = JsonHandler :: CreateArrayProperties($obj, $fields);
+
+		return json_encode($listJson);
+	}
+
 }
+
+
 
 class Teste{
 	private $id;
@@ -51,10 +78,32 @@ class Teste{
 
 $teste = new Teste();
 
-$teste -> setId('2');
+$teste -> setId('1');
 $teste -> setName('Maria Dolores');
 $teste -> setIdade(38);
 
-echo getJson($teste, ['name', 'id']);
+$teste2 = new Teste();
+$teste2 -> setId('2');
+$teste2 -> setName('João Espinafre');
+$teste2 -> setIdade(22);
+
+$teste3 = new Teste();
+$teste3 -> setId('3');
+$teste3 -> setName('Carla Perez');
+$teste3 -> setIdade(36);
+
+$objs = array();
+
+$objs[] = $teste;
+$objs[] = $teste2;
+$objs[] = $teste2;
+
+header('Content-Type: application/json; charset=ISO-8859-1');
+
+//echo JsonHandler :: JsonParseObject($teste, ['name', 'id']);
+
+
+echo JsonHandler :: JsonParseObjectList($objs);
+
 ?>
 

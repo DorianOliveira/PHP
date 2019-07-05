@@ -1,5 +1,9 @@
 <?php
 
+namespace JsonHandler;
+
+use ReflectionClass;
+
 class JsonHandler
 {
 

@@ -5,36 +5,138 @@ namespace JsonHandler;
 use ReflectionClass;
 class JsonHandler
 {
-    const HEADER = 'Content-Type: application/json';
-    private $jsonData;
+  const HEADER = 'Content-Type: application/json';
 
-    public function CreateFromArray($array, $key = '')
-    {
-        $result = $array;
-        
-        if($key != '')
-        {
-            $result = array($key => $array);
-        }
-        $this -> jsonData = json_encode($result);
-    }
+	public $arrayData;
+	private $mainKey;
+
+
+	
+	public function AddItem($key, $value, $item_key = '')
+	{
+		if($this -> GetMainKey() != '')
+		{
+			if($item_key == '')
+				$this -> arrayData[$this -> GetMainKey()][$key] = $value;
+			else
+				$this -> arrayData[$this -> GetMainKey()][$item_key][$key] = $value;
+		}
+		else
+		{
+			if($item_key == '')
+				$this -> arrayData[$key] = $value;
+			else
+				$this -> arrayData[$item_key][$key] = $value;
+		}
+		
+		$this -> CreateDefaultValues();
+	}	
+
+	public function GetArray()
+	{
+		return $this -> arrayData;
+	}
+
     public  function PrintJson()
     {
-        header(self :: HEADER);
-        echo $this -> jsonData;
+		header(self :: HEADER);
+		echo json_encode($this -> arrayData);
     } 
-	public function CreateFromObject($obj, $fields=array(), $key = '')
+
+	public function SetMainKey($key)
 	{
-	    $array_json = JsonHandler :: CreateArrayProperties($obj, $fields);
-	    $this -> jsonData = json_encode( $array_json);
+		if($key != '' && $key != null)
+			$this -> mainKey = $key;
 	}
-	private function CreateArrayProperties($obj, $fields = array())
+
+	public function GetMainKey()
+	{
+		return $this -> mainKey;
+	}
+
+	private function CreateDefaultValues()
+	{
+		$count = count($this -> arrayData[$this -> GetMainKey()]);
+		$this -> arrayData['length'] = $count;
+	}
+
+	public function CreateFromArray($array, $key = '')
+    {
+        $result = $array;
+
+		$this -> SetMainKey($key);
+		
+		$result = array($this -> GetMainKey() => $array);
+
+		$this -> arrayData = $result;
+		$this -> mainKey = $key;
+
+		$this -> CreateDefaultValues();
+	}
+
+	public function CreateFromObject($obj, $fields=array(), $key = 'result', $optionsMethods = array())
+	{
+		$this -> SetMainKey($key);
+
+		$array_json = JsonHandler :: CreateArrayProperties($obj, $fields, $optionsMethods);
+		
+		if($this -> GetMainKey() != '')
+			$array_data = array($this -> GetMainKey()  => $array_json);
+		else
+			$array_data = $array_json;
+
+		$this -> arrayData = $array_data;
+
+		$this -> CreateDefaultValues();
+	}
+
+	public function CreateFromListObject($list_item, $fields=array(), $key='result', $optionsMethods = array())
+	{
+		
+		$listJson = $this -> CreateArrayObject($list_item, $fields, $key, $optionsMethods);
+
+		if($this -> GetMainKey() != '' && $this -> GetMainKey() != null)
+		{
+			$this -> arrayData[$this -> GetMainKey()] = $listJson;
+		}
+		else {
+			$this -> arrayData = $listJson;
+		}
+
+		$this -> CreateDefaultValues();
+	}
+
+	private function CreateArrayObject($array, $fields=array(), $key='result', $optionsMethods = array())
+	{
+		$listJson = array();
+		$counter_item = 1;
+
+		$this -> SetMainKey($key);
+
+		foreach($array as $item_key => $item_value)
+		{
+			if(is_array($item_value) && !empty($item_value))
+			{
+				$listJson[$item_key] = $this -> CreateArrayObject($item_value, $fields, $key, $optionsMethods);
+			}
+			else if(gettype($item_value) == 'object')
+			{
+				$listJson[$item_key] = JsonHandler :: CreateArrayProperties($item_value, $fields, $optionsMethods);
+			}
+			else {
+				$listJson[$item_key] = $item_value;
+			}
+				
+		}
+
+		return $listJson;
+	}
+	private function CreateArrayProperties($obj, $fields = array(), $optionsMethods = array())
 	{
 		$reflection = new ReflectionClass($obj);
 	    $props = $reflection -> getProperties();
 		$array_json = array();
-		
-		//var_dump($props);
+
 	    foreach($props as $prop)
 	    {   
 	    	$valid_property = true;
@@ -42,125 +144,39 @@ class JsonHandler
 	    	{
 	    		if(!in_array($prop -> getName(), $fields))
 	    			$valid_property = false;
-	    	}
-			//echo $valid_property;
+			}
+			
 	    	if($valid_property)
 	    	{
-				
 				$prop -> setAccessible(true);
-				
-				//var_dump($prop -> getValue($obj));
-				//echo gettype($prop -> getValue($obj));
 				$type = gettype($prop -> getValue($obj));
 				
 				$value_object = null;
 
 				if($type == 'object')
-				{
 					$value_object = $this -> CreateArrayProperties($prop -> getValue($obj), array());
-				}
 				else
-				{
 					$value_object = $prop -> getValue($obj);
-				}
 				
 				$array_json[$prop -> getName()] = $value_object;
-	    	}
+			}
+			
+			if(is_array($optionsMethods) && count($optionsMethods) > 0)
+			{
+				foreach($optionsMethods as $option)
+				{
+					$method = $option['method'];
+					$key = $option['key'];
+					$values = $option['values'];
+
+					$method_to_invoke = $reflection -> getMethod($method);
+
+					$method_to_invoke -> invokeArgs($obj, $values);
+				}
+			}
 		}
 		
 		return $array_json;
 	}
-	public  function CreateFromListObject($listObj, $fields=array())
-	{
-		$listJson = array();
-        $counter_item = 1;
-        
-		foreach($listObj as $obj)
-			$listJson['item' . $counter_item ++] = JsonHandler :: CreateArrayProperties($obj, $fields);
-        
-        $this -> jsonData =  json_encode($listJson);
-	}
+
 }
-
-
-class Teste{
-	private $id;
-	private $name;
-	private $idade;
-	private $teste;
-
-	public function setId($id)
-	{
-		$this -> id = $id;
-	}
-
-	public function setName($name)
-	{
-		$this -> name = $name;
-	}
-
-	public function setIdade($idade)
-	{
-		$this -> idade = $idade;
-	}
-
-	public function getTeste()
-	{
-		return $this -> teste;
-	}
-
-	public function setTeste(Teste $teste)
-	{
-		$this -> teste = $teste;
-	}
-}
-
-$teste = new Teste();
-$teste2 = new Teste();
-$teste3 = new Teste();
-
-$teste -> setId('1');
-$teste -> setName('Maria Dolores');
-$teste -> setIdade(38);
-$teste -> setTeste($teste2);
-
-
-$teste2 -> setId('2');
-$teste2 -> setName('João Espinafre');
-$teste2 -> setIdade(22);
-$teste3 -> setTeste($teste3);
-
-$teste3 -> setId('3');
-$teste3 -> setName('Carla Perez');
-$teste3 -> setIdade(36);
-
-$objs = array();
-
-$objs[] = $teste;
-$objs[] = $teste2;
-$objs[] = $teste3;
-
-$jsonHandler = new JsonHandler();
-
-$jsonHandler -> CreateFromObject($teste);
-$jsonHandler -> PrintJson();
-exit;
-?>
-<script>
-	//Exemplo javascript com jQuery
-
-	jQuery(function(){
-		jQuery.get('reflection-json.php', function(data){ 
-
-		   for(var item in data)
-		   {
-		        var current_item = data[item];
-		          
-		        console.log(current_item.name);
-		        console.log(current_item.id);
-		        console.log(current_item.idade);  
-		   }
-		});
-	});
-</script>
-

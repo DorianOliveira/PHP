@@ -38,56 +38,44 @@
 
         function Mount(isList=false)
         {
-
-            let id_template = '';
-            let html_container = '';
-
-            let template = $(self);
-            
-            let template_data = template.data();
-            let container_item = $(self);
-            
-            if(template_data)
-            {
-                id_template = template_data.idTemplate;
-                html_container = $('[data-json-template=' + id_template + ']');
-            }
-
+            let containerItem = $(self);
+           
             if(isList)
-            {
-                
-                for(var item in self.currentData)
+            { 
+                let template = $(self);
+                let templateData = template.data();
+
+                if(templateData)
                 {
-                    let template_clone = self.clone();
-                    template_clone.show();
-                    html_container.append(template_clone);
+                    let templateId = templateData.idTemplate;
+                    let htmlContainer = $('[data-json-template=' + templateId + ']');
 
-                    container_item = template_clone;
+                     for(var item in self.currentData)
+                    {
+                        let templateClone = self.clone();
+                        
+                        templateClone.show();
+                        htmlContainer.append(templateClone);
 
-                    self.currentData = self.data[self.mainKey][item];
-                    MountJsonItem(container_item);
+                        containerItem = templateClone;
+
+                        self.currentData = self.data[self.mainKey][item];
+                        MountJsonItem(containerItem);
+                    }
                 }
             }
             else
             {
 
-                MountJsonItem(container_item);    
+                MountJsonItem(containerItem);    
             }
-            
         }
 
-        //function MountJsonItem(jsonData, elementContainer='')
         function MountJsonItem(container_item)
         {
-
             let jsonData = self.currentData;
-            
-            //Percorre todas as chaves do objeto json
             for(var key in self.currentData)
             {
-
-                console.log(key);
-
                 let data_set_json_key = '[data-json-key=' + key + ']'; 
                 let data_set_json_source = '[data-json-source=' + key + ']';
                 
@@ -100,11 +88,6 @@
                 element = $(data_set_json_key, container_item);
                 element_data_source = $(data_set_json_source, container_item);
                 
-                
-                
-                
-
-                //Se o elemento não estiver vazio...
                 if(element.length > 0)
                 {
 
@@ -143,21 +126,15 @@
                 else if(element_data_source.length > 0)
                 {
 
-
                     element_data_source.each(function(e){
-
 
                         let data_source_option = $(this).data().jsonSourceOption;
                         let data_source_values = $(this).data().jsonSourceValues;
-                        
-
 
                         for(var item in value)
                         {
                             let current_item = value[item];
-
                             let child_element = '';
-
 
                             if(data_source_option == 'option')
                             {
@@ -187,7 +164,6 @@
                             $(this).append(child_element);
                         }
                     });
-
                 }
             }
         }

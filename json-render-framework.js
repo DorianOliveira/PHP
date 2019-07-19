@@ -15,7 +15,7 @@
         self.mainKey = settings.mainKey;
         self.elements = [];
 
-        self.elements.find = function(key, value)
+        self.elements.findByItemKey = function(key, value)
         {
 
             var element = undefined;
@@ -24,16 +24,12 @@
 
 
                 let currentElement = $(this);
-                
+               
                 let jsonItem = $('[data-json-item]', currentElement);
-
-
 
                 if(jsonItem)
                 {
-                    let dataAttr = jsonItem.data().jsonAttr;
-
-                    console.log(dataAttr);
+                    let dataAttr = jsonItem.data().jsonAttr;                 
 
                     if(dataAttr == key)
                     {
@@ -62,30 +58,18 @@
             Mount(true);           
         }
 
-        self.ClearJsonData = function()
+        self.ClearJsonDataList = function()
         {
-
+            
         }
 
         self.ClearJsonDataItem = function(key, value)
         {
 
-            let elementToRemove = self.elements.find(key, value);
-
-            console.log(elementToRemove);
+            let elementToRemove = self.elements.findByItemKey(key, value);
 
             if(elementToRemove)
                 elementToRemove.remove();
-
-            // var selector_data_item = '[data-json-item=' + dataJsonItem + ']';
-            // var selector = selector_data_item + '[' + dataJsonAttr + '=' + dataJsonValue + ']:eq(0)';
-            
-
-            // var element = $(selector, self);
-
-            // console.log(self);
-
-            //element.remove();
         }
 
         function Mount(isList=false)

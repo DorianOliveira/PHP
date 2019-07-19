@@ -39,6 +39,8 @@
 		</div>
 
 	</section>
+	
+	<button id="remove">Remover 1 Item</button>
 
 	<footer>
 	
@@ -70,6 +72,10 @@
 			list = $('.my-list-template').RenderJson(settingsListRender);
 			list.RenderJsonList();
 
+			$('#remove').on('click', function(e){
+
+				list.ClearJsonDataItem('id', 2 );
+			});
 
 		})
 		

@@ -13,6 +13,42 @@
 
         self.data = settings.data;
         self.mainKey = settings.mainKey;
+        self.elements = [];
+
+        self.elements.find = function(key, value)
+        {
+
+            var element = undefined;
+
+            $(this).each(function(e){
+
+
+                let currentElement = $(this);
+                
+                let jsonItem = $('[data-json-item]', currentElement);
+
+
+
+                if(jsonItem)
+                {
+                    let dataAttr = jsonItem.data().jsonAttr;
+
+                    console.log(dataAttr);
+
+                    if(dataAttr == key)
+                    {
+                        let valueKey = jsonItem.attr(dataAttr);
+
+                        if(value == valueKey)
+                        {
+                            element = currentElement;
+                        }
+                    }
+                }
+            });
+
+            return element;
+        }
 
         self.currentData = self.data[settings.mainKey];
 
@@ -31,14 +67,32 @@
 
         }
 
-        self.ClearJsonDataItem = function()
+        self.ClearJsonDataItem = function(key, value)
         {
 
+            let elementToRemove = self.elements.find(key, value);
+
+            console.log(elementToRemove);
+
+            if(elementToRemove)
+                elementToRemove.remove();
+
+            // var selector_data_item = '[data-json-item=' + dataJsonItem + ']';
+            // var selector = selector_data_item + '[' + dataJsonAttr + '=' + dataJsonValue + ']:eq(0)';
+            
+
+            // var element = $(selector, self);
+
+            // console.log(self);
+
+            //element.remove();
         }
 
         function Mount(isList=false)
         {
             let containerItem = $(self);
+
+
            
             if(isList)
             { 
@@ -50,7 +104,7 @@
                     let templateId = templateData.idTemplate;
                     let htmlContainer = $('[data-json-template=' + templateId + ']');
 
-                     for(var item in self.currentData)
+                    for(var item in self.currentData)
                     {
                         let templateClone = self.clone();
                         
@@ -60,20 +114,26 @@
                         containerItem = templateClone;
 
                         self.currentData = self.data[self.mainKey][item];
+                        
+                        self.elements.push(containerItem);
+                        
                         MountJsonItem(containerItem);
                     }
                 }
             }
             else
             {
-
-                MountJsonItem(containerItem);    
+                MountJsonItem(containerItem);
+                self.elements.push(containerItem);
             }
+
+            
         }
 
-        function MountJsonItem(container_item)
+        function MountJsonItem(containerItem)
         {
             let jsonData = self.currentData;
+
             for(var key in self.currentData)
             {
                 let data_set_json_key = '[data-json-key=' + key + ']'; 
@@ -85,13 +145,16 @@
                 let element_data_source = $(data_set_json_source);
                 
                 
-                element = $(data_set_json_key, container_item);
-                element_data_source = $(data_set_json_source, container_item);
+                element = $(data_set_json_key, containerItem);
+                element_data_source = $(data_set_json_source, containerItem);
+
+                
                 
                 if(element.length > 0)
                 {
 
                     element.each(function(e){
+                        
                         
 
                         let json_option = $(this).data().jsonOption;
@@ -127,6 +190,7 @@
                 {
 
                     element_data_source.each(function(e){
+
 
                         let data_source_option = $(this).data().jsonSourceOption;
                         let data_source_values = $(this).data().jsonSourceValues;

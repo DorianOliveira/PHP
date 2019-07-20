@@ -14,6 +14,10 @@
         self.data = settings.data;
         self.mainKey = settings.mainKey;
         self.elements = [];
+        self.template = [];
+        self.container = [];
+
+        self.currentData = self.data[settings.mainKey];
 
         self.elements.findByItemKey = function(key, value)
         {
@@ -25,7 +29,7 @@
 
                 let currentElement = $(this);
                
-                let jsonItem = $('[data-json-item]', currentElement);
+                let jsonItem = $('[data-simple-json-item]', currentElement);
 
                 if(jsonItem)
                 {
@@ -46,7 +50,7 @@
             return element;
         }
 
-        self.currentData = self.data[settings.mainKey];
+        
 
         self.RenderJsonItem = function()
         {
@@ -55,7 +59,7 @@
 
         self.RenderJsonList = function()
         {
-            Mount(true);           
+            Mount(true);
         }
 
         self.ClearJsonDataList = function()
@@ -65,7 +69,6 @@
 
         self.ClearJsonDataItem = function(key, value)
         {
-
             let elementToRemove = self.elements.findByItemKey(key, value);
 
             if(elementToRemove)
@@ -77,23 +80,48 @@
             let containerItem = $(self);
 
 
-           
+
             if(isList)
             { 
                 let template = $(self);
                 let templateData = template.data();
 
+
+
                 if(templateData)
                 {
-                    let templateId = templateData.idTemplate;
-                    let htmlContainer = $('[data-json-template=' + templateId + ']');
+
+                    
+
+                    let templateId = templateData.simpleJsonTemplate;
+                    let htmlContainer = $('[data-simple-json-container=' + templateId + ']');
+                    let elementEmptyData = $('[data-simple-json-empty-data]', htmlContainer);
+
+                    elementEmptyData.hide();
+
+                    if(self.currentData.length == 0)
+                        elementEmptyData.show(); 
+
+                    
+                    
+                    //CheckSpecialRulesTemplate(template);
+
+                    self.template = template;
+                    template.remove();
+
+
 
                     for(var item in self.currentData)
                     {
                         let templateClone = self.clone();
                         
+
+
                         templateClone.show();
                         htmlContainer.append(templateClone);
+
+
+
 
                         containerItem = templateClone;
 
@@ -107,112 +135,192 @@
             }
             else
             {
-                MountJsonItem(containerItem);
                 self.elements.push(containerItem);
+                MountJsonItem(containerItem);
+                
             }
-
-            
         }
 
-        function MountJsonItem(containerItem)
+        function GetMarkup(element, key, value)
+        {
+            let currentElement = $(element);
+            
+            let markup = ReplaceMarkup(currentElement.html(), key, value);
+
+
+            if(markup != '')
+                currentElement.html(markup);
+        }
+
+        function ReplaceMarkup(initialValue, key, value)
+        {
+            let patternStart = '{@';
+            let patternEnd = '}';
+            let showKey = patternStart + key + patternEnd;
+            let stringStart = initialValue.indexOf(showKey);
+
+            let keyExists = stringStart != -1;
+
+            if(keyExists)
+            {
+                let stringEnd = showKey.length;
+                let subString = initialValue.substring(stringStart, stringStart + stringEnd);
+
+
+                let regExp = new RegExp(subString, 'g');
+
+                markup = initialValue.replace(regExp, value);
+                return markup;
+            }
+
+            return '';
+        }
+
+        function GetMarkupAttributes(element, key, value)
+        {
+            let currentElement = $(element);
+            let attributes = currentElement.attributes;
+
+            for( var attribute in attributes)
+            {
+                 let markup = ReplaceMarkup(currentElement.attr(attribute), key, value);
+
+                 if(markup != '')
+                    currentElement.attr(attribute, markup);
+            }
+        }
+
+        function CheckSpecialRulesTemplate(element)
+        {
+            if(element.is('option') || element.is('li'))
+            {
+                
+                element.remove();
+            }
+        }
+
+        function MountJsonItem(target)
         {
             let jsonData = self.currentData;
 
             for(var key in self.currentData)
             {
-                let data_set_json_key = '[data-json-key=' + key + ']'; 
-                let data_set_json_source = '[data-json-source=' + key + ']';
+
+                
+
+                //let data_set_json_key = '[data-simple-json-key=' + key + ']'; 
+                let data_set_json_source = '[data-simple-json-data-source=' + key + ']';
                 
                 let value = jsonData[key];
-                let element = $(data_set_json_key);
+                
+                
 
-                let element_data_source = $(data_set_json_source);
-                
-                
-                element = $(data_set_json_key, containerItem);
-                element_data_source = $(data_set_json_source, containerItem);
+                // let element = $(data_set_json_key);
+                // let element_data_source = $(data_set_json_source);
+                // element = $(data_set_json_key, containerItem);
+                // element_data_source = $(data_set_json_source, containerItem);
 
-                
-                
-                if(element.length > 0)
+                let currentElement = $(target);
+
+
+         
+                GetMarkup(currentElement, key, value);
+                GetMarkupAttributes(currentElement, key, value);
+
+                let elementDataSource = $(data_set_json_source, currentElement);
+
+                if(elementDataSource.length > 0)
                 {
+                    elementDataSource.each(function(){
 
-                    element.each(function(e){
+                        let children = $('[data-simple-json-item]', this);
+
+                        let target = children.RenderJson({
+                            data: self.currentData,
+                            mainKey: key
+                        });
+
+                        target.RenderJsonList();
                         
+
                         
-
-                        let json_option = $(this).data().jsonOption;
-                        let json_attr = $(this).data().jsonAttr;
-
-
-                        if(json_attr != undefined && json_attr != '')
-                        {
-                            $(this).attr(json_attr, value);
-                        }
-                        else
-                        {
-                            switch(json_option)
-                            {
-                                case 'value':
-                                    $(this).val(value);
-                                    break;
-                                case 'text':
-                                    $(this).text(value);
-                                    break;                    
-                                default:
-                                case 'html':
-                                    $(this).html(value);
-                                    break;
-                                case 'src':
-                                    $(this).attr('src', value);
-                                    break;
-                            }
-                        }
+                        // self.currentData = value;
+                        // self = elementDataSource;
+                        
+                        // Mount(true);
                     });
                 }
-                else if(element_data_source.length > 0)
-                {
 
-                    element_data_source.each(function(e){
-
-
-                        let data_source_option = $(this).data().jsonSourceOption;
-                        let data_source_values = $(this).data().jsonSourceValues;
-
-                        for(var item in value)
-                        {
-                            let current_item = value[item];
-                            let child_element = '';
-
-                            if(data_source_option == 'option')
-                            {
-                                child_element = $('<option />');
+                //let currentElementKey = currentElement.data().simpleJsonKey;
+                //let currentElementDataSource = currentElement.data().simpleJsonDataSource;
                     
 
-                                for(var option in data_source_values)
-                                {
-                                    let json_key = data_source_values[option];
-                                    let new_value = current_item[json_key];
 
-                                    if(option == 'value')
-                                    {
-                                        child_element.attr('value', new_value);    
-                                    }
-                                    else if(option == 'text')
-                                    {
-                                        child_element.text(new_value);
-                                    }
-                                    else if(option == 'html')
-                                    {
-                                        child_element.html(new_value);
-                                    }
-                                }
-                            }
 
-                            $(this).append(child_element);
-                        }
-                    });
-                }
+                // if(currentElementDataSource == key)
+                // {
+
+                //     element_data_source.each(function(e){
+
+                //         // let data_source_option = $(this).data().simpleJsonSourceOption;
+                //         // let data_source_values = $(this).data().simpleJsonSourceValues;
+                //         // let data_source_clear_on_load = element_data_source.data().simpleJsonSourceClearOnLoad;
+                //         // let data_source_first_item_text = element_data_source.data().simpleJsonSourceFirstItemText;
+
+                //         if(data_source_clear_on_load)
+                //         {
+                            
+                //         }
+                //         if(data_source_first_item_text != null && data_source_first_item_text != '')
+                //         {
+                //         }
+
+                //         for(var item in value)
+                //         {
+                //             let current_item = value[item];
+                //             let child_element = '';
+
+                //             // if(data_source_option == 'option')
+                //             // {
+                //             //     child_element = $('<option />');
+                    
+
+                //             //     for(var option in data_source_values)
+                //             //     {
+                //             //         let json_key = data_source_values[option];
+                //             //         let new_value = current_item[json_key];
+
+                //             //         if(option == 'value')
+                //             //         {
+                //             //             child_element.attr('value', new_value);    
+                //             //         }
+                //             //         else if(option == 'text')
+                //             //         {
+                //             //             child_element.text(new_value);
+                //             //         }
+                //             //         else if(option == 'html')
+                //             //         {
+                //             //             child_element.html(new_value);
+                //             //         }
+                //             //     }
+                //             // }
+
+                //             $(this).append(child_element);
+                //         }
+                //     });
+                // }
+
+                //let child = $(data_set_json_key, currentElement);
+                // let childDataSource = $(data_set_json_source, currentElement);
+
+                // child.each(function(e){
+                //     //MountJsonItem($(this));
+                // });
+
+                // childDataSource.each(function(e){
+                //     MountJsonItem($(this));
+                // })
+
             }
         }
 

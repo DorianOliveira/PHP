@@ -1,0 +1,27 @@
+body{
+	margin: 0;
+	padding: 0;
+
+	font-family: Arial Helvetica, sans-serif;
+	line-height: 150%;
+}
+
+
+a{
+	outline: none;
+
+}
+
+a, a:visited, a:focus, a:hover{
+	
+}
+footer.footer
+{
+	background: #000;
+	padding: 40px;
+	color: #fff;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+
+}

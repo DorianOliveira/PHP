@@ -26,7 +26,6 @@
 
             $(this).each(function(e){
 
-
                 let currentElement = $(this);
                
                 let jsonItem = $('[data-simple-json-item]', currentElement);
@@ -49,8 +48,6 @@
 
             return element;
         }
-
-        
 
         self.RenderJsonItem = function()
         {
@@ -81,51 +78,35 @@
 
             if(isList)
             { 
-                
                 let templateData = template.data();
 
                 if(templateData)
                 {
-
-                    
-
                     let templateId = templateData.simpleJsonTemplate;
                     let htmlContainer = $('[data-simple-json-container=' + templateId + ']');
                     let elementEmptyData = $('[data-simple-json-empty-data]', htmlContainer);
-
-                    
 
                     elementEmptyData.hide();
 
                     if(self.currentData.length == 0)
                         elementEmptyData.show(); 
 
-                    
-                    
-                    //CheckSpecialRulesTemplate(template);
-
                     self.template = template;
                     template.remove();
 
-
+                    
 
                     for(var item in self.currentData)
                     {
-                        let templateClone = self.clone();
-                        
+                        console.log(self.currentData);
 
+                        let templateClone = self.clone();
+                        let containerItem = templateClone;                            
 
                         templateClone.show();
                         htmlContainer.append(templateClone);
 
-                        
-                        
-
-
-                        let containerItem = templateClone;
-
                         self.currentData = self.data[self.mainKey][item];
-                        
                         self.elements.push(containerItem);
                         
                         MountJsonItem(containerItem);
@@ -140,15 +121,52 @@
             }
         }
 
+        String.prototype.isEmptyOfUndefined = function()
+        {
+            return this == '' 
+                || this == undefined
+                || this == null;
+        }
+
+        function IsNullOrEmpty(element)
+        {
+            return element == '' 
+                || element == undefined
+                || element == null;
+        }
+
+
+
         function GetMarkup(element, key, value)
         {
             let currentElement = $(element);
-            
-            let markup = ReplaceMarkup(currentElement.html(), key, value);
+            let children = currentElement.children();
+            let markup =
+                ReplaceMarkup(
+                        currentElement.html(),
+                        key,
+                        value);
 
 
             if(markup != '')
                 currentElement.html(markup);
+        }
+
+        function GetMarkupAttributes(element, key, value)
+        {
+            let currentElement = $(element);
+            let attributes = currentElement.attributes;
+
+            let children = currentElement.children();
+
+
+            for( var attribute in attributes)
+            {
+                 let markup = ReplaceMarkup(currentElement.attr(attribute), key, value);
+
+                 if(markup != '')
+                    currentElement.attr(attribute, markup);
+            }
         }
 
         function ReplaceMarkup(initialValue, key, value)
@@ -164,8 +182,6 @@
             {
                 let stringEnd = showKey.length;
                 let subString = initialValue.substring(stringStart, stringStart + stringEnd);
-
-
                 let regExp = new RegExp(subString, 'g');
 
                 markup = initialValue.replace(regExp, value);
@@ -175,25 +191,12 @@
             return '';
         }
 
-        function GetMarkupAttributes(element, key, value)
-        {
-            let currentElement = $(element);
-            let attributes = currentElement.attributes;
 
-            for( var attribute in attributes)
-            {
-                 let markup = ReplaceMarkup(currentElement.attr(attribute), key, value);
-
-                 if(markup != '')
-                    currentElement.attr(attribute, markup);
-            }
-        }
 
         function CheckSpecialRulesTemplate(element)
         {
             if(element.is('option') || element.is('li'))
             {
-                
                 element.remove();
             }
         }
@@ -201,54 +204,50 @@
         function MountJsonItem(target)
         {
             let jsonData = self.currentData;
+            let currentElement = $(target);
+
+            let data_source_attribute = '[data-simple-json-data-source]';
+
+            let elementDataSource = $(data_source_attribute, currentElement);
+
+            if(elementDataSource.length > 0)
+            {
+                elementDataSource.each(function(){
+
+                    let children = $('[data-simple-json-template]', this);
+                    let data_soure = $(this).data().simpleJsonDataSource;
+                    
+                    children.each(function(e){
+
+                        
+                        let target = $(this).RenderJson({
+                            data: self.currentData,
+                            mainKey: data_soure
+                        });
+
+                        target.RenderJsonList();
+
+                    });
+                });
+            }
 
             for(var key in self.currentData)
             {
 
-                
-
-                //let data_set_json_key = '[data-simple-json-key=' + key + ']'; 
-                let data_set_json_source = '[data-simple-json-data-source=' + key + ']';
-                
                 let value = jsonData[key];
-                
-                
-
-                // let element = $(data_set_json_key);
-                // let element_data_source = $(data_set_json_source);
-                // element = $(data_set_json_key, containerItem);
-                // element_data_source = $(data_set_json_source, containerItem);
-
-                let currentElement = $(target);
-
-
-         
                 GetMarkup(currentElement, key, value);
                 GetMarkupAttributes(currentElement, key, value);
 
-                let elementDataSource = $(data_set_json_source, currentElement);
-
-                if(elementDataSource.length > 0)
+                // console.log(key + ' - ' + value);
+                
+                if(currentElement.is('option'))
                 {
-                    elementDataSource.each(function(){
 
-                        let children = $('[data-simple-json-item]', this);
-
-                        let target = children.RenderJson({
-                            data: self.currentData,
-                            mainKey: key
-                        });
-
-                        target.RenderJsonList();
-                        
-
-                        
-                        // self.currentData = value;
-                        // self = elementDataSource;
-                        
-                        // Mount(true);
-                    });
+                    // console.log(currentElement);
+                    // console.log(value);
                 }
+
+               
 
                 //let currentElementKey = currentElement.data().simpleJsonKey;
                 //let currentElementDataSource = currentElement.data().simpleJsonDataSource;

@@ -1,13 +1,13 @@
 $(document).ready(function(e){
 
-    let menu = $('.json-template-menu');
+    // let menu = $('.json-template-menu');
 
-    menu.RenderJson({
-        data: jsonMenu.result,
-        mainKey: 'items'
-    });
+    // menu.RenderJson({
+    //     data: jsonMenu.result,
+    //     mainKey: 'items'
+    // });
 
-    //menu.RenderJsonList();
+    // menu.RenderJsonList();
 
     levels = $('.levels-template');
 
@@ -17,5 +17,16 @@ $(document).ready(function(e){
     });
 
     levels.RenderJsonList();
+
+ //    let reference = $('.template-reference');
+	
+	// reference.RenderJson({
+ //    	data: jsonReference.result,
+ //    	mainKey: 'items'
+ //    });
+
+ //    reference.RenderJsonList();
+
+
 
 });

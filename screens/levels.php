@@ -9,9 +9,11 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '\projetos\php2\header.php') ?>
 		<p>id: {@id}</p>
 		<hr>
 		<select
-			data-simple-json-template="template-levels"
+			data-simple-json-container="template-livros"
 			data-simple-json-data-source="livros">
-			<option data-simple-json-item="livro" value="{@id}">{@title}</option>
+			<option
+				data-simple-json-template="template-livros"
+					data-simple-json-item="livro" value="{@id}">{@title}</option>
 		</select>
 	</div>
 </section>

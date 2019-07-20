@@ -77,16 +77,12 @@
 
         function Mount(isList=false)
         {
-            let containerItem = $(self);
-
-
+            let template = $(self);
 
             if(isList)
             { 
-                let template = $(self);
+                
                 let templateData = template.data();
-
-
 
                 if(templateData)
                 {
@@ -96,6 +92,8 @@
                     let templateId = templateData.simpleJsonTemplate;
                     let htmlContainer = $('[data-simple-json-container=' + templateId + ']');
                     let elementEmptyData = $('[data-simple-json-empty-data]', htmlContainer);
+
+                    
 
                     elementEmptyData.hide();
 
@@ -120,10 +118,11 @@
                         templateClone.show();
                         htmlContainer.append(templateClone);
 
+                        
+                        
 
 
-
-                        containerItem = templateClone;
+                        let containerItem = templateClone;
 
                         self.currentData = self.data[self.mainKey][item];
                         

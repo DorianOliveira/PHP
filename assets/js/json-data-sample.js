@@ -50,10 +50,19 @@ var json3Levels =
                 name: 'Dorian',
                 livros:
                 [
-                    {id: 1, title: 'O Senhor dos Anéis'},
-                    {id: 2, title: 'O Código da Vinci'},
-                    {id: 6, title: 'Assassin´s Creed'},
-                    {id: 8, title: 'Monte Cinco'}
+                    {id: 1, title: 'O Senhor dos Anéis', 
+                        capitulos:[ {id: 0, name: ''}]},
+                    {id: 2, title: 'O Código da Vinci', 
+                        capitulos:[ {id: 0, name: ''}]},
+                    {id: 6, title: 'Assassin´s Creed', 
+                        capitulos:[ {id: 0, name: ''}]},
+                    {id: 8, title: 'Monte Cinco',
+                        capitulos:
+                        [
+                            {id: 1, name: 'Chapter 1'},
+                            {id: 2, name: 'Chapter 2'},
+                            {id: 1, name: 'Chapter 3'}
+                        ]}
 
 
                 ]
@@ -63,8 +72,17 @@ var json3Levels =
                 name: 'Paula',
                 livros:
                 [
-                    {id: 7, title: 'A Menina que Roubava Livros'},
-                    {id: 9, title: 'O Símbolo Sagrado'},
+                    {
+                        id: 7,
+                        title: 'A Menina que Roubava Livros',
+                        capitulos:
+                        [
+                            {id: 1, name: 'Chapter 1'},
+                            {id: 2, name: 'Chapter 2'},
+                            {id: 1, name: 'Chapter 3'}
+                        ]
+                    },
+                    {id: 9, title: 'O Símbolo Sagrado', capitulos:[ {id: 0, name: ''}]},
                 ]
             },
 
@@ -73,7 +91,7 @@ var json3Levels =
                 name: 'John',
                 livros:
                 [
-                    {id: 11, title: 'Poder sem Limites'},
+                    {id: 11, title: 'Poder sem Limites', capitulos:[]},
                     {id: 12, title: 'O Segredo'},
                     {id: 13, title: 'A Volta dos Que Não Foram'},
 

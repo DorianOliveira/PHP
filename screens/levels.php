@@ -14,14 +14,28 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '\projetos\php2\header.php') ?>
 				
 				<hr>
 				<div class="form-group">
-					<select
+					<!-- <select
 						class="form-control"
 						data-simple-json-container="template-livros"
 						data-simple-json-data-source="livros">
 						<option
 							data-simple-json-template="template-livros"
 							value="{@id}">{@id} - {@title}</option>
-					</select>
+					</select> -->
+					<ul
+						data-simple-json-container="template-livros"
+						data-simple-json-data-source="livros"
+						>
+						<li data-simple-json-template="template-livros" id="{@id}">
+							{@id} - {@title}
+
+							<select
+								data-simple-json-container="template-chapters"
+								data-simple-json-data-source="capitulos">
+								<option data-simple-json-template="template-chapters">{@id} - {@name}</option>
+							</select>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</section>

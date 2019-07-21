@@ -19,35 +19,7 @@
 
         self.currentData = self.data[settings.mainKey];
 
-        self.elements.findByItemKey = function(key, value)
-        {
-
-            var element = undefined;
-
-            $(this).each(function(e){
-
-                let currentElement = $(this);
-               
-                let jsonItem = $('[data-simple-json-item]', currentElement);
-
-                if(jsonItem)
-                {
-                    let dataAttr = jsonItem.data().jsonAttr;                 
-
-                    if(dataAttr == key)
-                    {
-                        let valueKey = jsonItem.attr(dataAttr);
-
-                        if(value == valueKey)
-                        {
-                            element = currentElement;
-                        }
-                    }
-                }
-            });
-
-            return element;
-        }
+       
 
         self.RenderJsonItem = function()
         {
@@ -83,146 +55,77 @@
                 if(templateData)
                 {
                     let templateId = templateData.simpleJsonTemplate;
-                    let htmlContainer = $('[data-simple-json-container=' + templateId + ']');
+                    let htmlContainer = template.closest('[data-simple-json-container=' + templateId + ']');
                     let elementEmptyData = $('[data-simple-json-empty-data]', htmlContainer);
 
                     elementEmptyData.hide();
 
-                    if(self.currentData.length == 0)
+                    if(self.currentData != undefined && self.currentData != null)
+                    {
+                         if(self.currentData.length == 0)
                         elementEmptyData.show(); 
 
-                    self.template = template;
-                    template.remove();
-
-                    
-
-                    for(var item in self.currentData)
-                    {
-                        console.log(self.currentData);
-
-                        let templateClone = self.clone();
-                        let containerItem = templateClone;                            
-
-                        templateClone.show();
-                        htmlContainer.append(templateClone);
-
-                        self.currentData = self.data[self.mainKey][item];
-                        self.elements.push(containerItem);
+                        //TODO: Test handling data (excluding and refreshing page)
+                        self.template = template;
+                        template.remove();
                         
-                        MountJsonItem(containerItem);
+                        for(var item in self.currentData)
+                        {
+
+                            let templateClone = self.clone();
+                            let containerItem = templateClone;                            
+
+                            templateClone.show();
+                            htmlContainer.append(templateClone);
+
+                            self.currentData = self.data[self.mainKey][item];
+                            self.elements.push(containerItem);
+                            
+
+                            MountJsonItem(containerItem);
+                        }
                     }
                 }
             }
             else
             {
                 self.elements.push(containerItem);
+
                 MountJsonItem(containerItem);
-                
             }
         }
 
-        String.prototype.isEmptyOfUndefined = function()
-        {
-            return this == '' 
-                || this == undefined
-                || this == null;
-        }
-
-        function IsNullOrEmpty(element)
-        {
-            return element == '' 
-                || element == undefined
-                || element == null;
-        }
-
-
-
-        function GetMarkup(element, key, value)
-        {
-            let currentElement = $(element);
-            let children = currentElement.children();
-            let markup =
-                ReplaceMarkup(
-                        currentElement.html(),
-                        key,
-                        value);
-
-
-            if(markup != '')
-                currentElement.html(markup);
-        }
-
-        function GetMarkupAttributes(element, key, value)
-        {
-            let currentElement = $(element);
-            let attributes = currentElement.attributes;
-
-            let children = currentElement.children();
-
-
-            for( var attribute in attributes)
-            {
-                 let markup = ReplaceMarkup(currentElement.attr(attribute), key, value);
-
-                 if(markup != '')
-                    currentElement.attr(attribute, markup);
-            }
-        }
-
-        function ReplaceMarkup(initialValue, key, value)
-        {
-            let patternStart = '{@';
-            let patternEnd = '}';
-            let showKey = patternStart + key + patternEnd;
-            let stringStart = initialValue.indexOf(showKey);
-
-            let keyExists = stringStart != -1;
-
-            if(keyExists)
-            {
-                let stringEnd = showKey.length;
-                let subString = initialValue.substring(stringStart, stringStart + stringEnd);
-                let regExp = new RegExp(subString, 'g');
-
-                markup = initialValue.replace(regExp, value);
-                return markup;
-            }
-
-            return '';
-        }
-
-
-
-        function CheckSpecialRulesTemplate(element)
-        {
-            if(element.is('option') || element.is('li'))
-            {
-                element.remove();
-            }
-        }
-
+        
         function MountJsonItem(target)
         {
             let jsonData = self.currentData;
             let currentElement = $(target);
 
-            let data_source_attribute = '[data-simple-json-data-source]';
+            let dataSourceSelector = '[data-simple-json-data-source]:first';
 
-            let elementDataSource = $(data_source_attribute, currentElement);
+            let elementDataSource = $(dataSourceSelector, currentElement);
 
             if(elementDataSource.length > 0)
             {
                 elementDataSource.each(function(){
 
                     let children = $('[data-simple-json-template]', this);
-                    let data_soure = $(this).data().simpleJsonDataSource;
+                    let dataSourceKey = $(this).data().simpleJsonDataSource;
                     
+                    // console.log($(this));
+                    // console.log('children:');
+
                     children.each(function(e){
 
-                        
+                        // console.log($(this));
+                        // console.log(self.currentData);
+                        // console.log(dataSource);
+
+                        //console.log(self.currentData[dataSourceKey]);
+
                         let target = $(this).RenderJson({
                             data: self.currentData,
-                            mainKey: data_soure
+                            mainKey: dataSourceKey
                         });
 
                         target.RenderJsonList();
@@ -235,8 +138,13 @@
             {
 
                 let value = jsonData[key];
-                GetMarkup(currentElement, key, value);
-                GetMarkupAttributes(currentElement, key, value);
+
+                if(value != undefined && value != null)
+                {
+                    GetMarkup(currentElement, key, value);
+                    GetMarkupAttributes(currentElement, key, value);    
+                }
+                
 
                 // console.log(key + ' - ' + value);
                 
@@ -320,6 +228,114 @@
                 // })
 
             }
+        }
+
+        String.prototype.isEmptyOfUndefined = function()
+        {
+            return this == '' 
+                || this == undefined
+                || this == null;
+        }
+
+        function IsNullOrEmpty(element)
+        {
+            return element == '' 
+                || element == undefined
+                || element == null;
+        }
+
+        function GetMarkup(element, key, value)
+        {
+            let currentElement = $(element);
+            let children = currentElement.children();
+            let markup =
+                ReplaceMarkup(
+                        currentElement.html(),
+                        key,
+                        value);
+
+
+            if(markup != '')
+                currentElement.html(markup);
+        }
+
+        function GetMarkupAttributes(element, key, value)
+        {
+            let currentElement = $(element);
+            let attributes = currentElement.attributes;
+
+            let children = currentElement.children();
+
+
+            for( var attribute in attributes)
+            {
+                 let markup = ReplaceMarkup(currentElement.attr(attribute), key, value);
+
+                 if(markup != '')
+                    currentElement.attr(attribute, markup);
+            }
+        }
+
+        function ReplaceMarkup(initialValue, key, value)
+        {
+            let patternStart = '{@';
+            let patternEnd = '}';
+            let showKey = patternStart + key + patternEnd;
+            let stringStart = initialValue.indexOf(showKey);
+
+            let keyExists = stringStart != -1;
+
+            if(keyExists)
+            {
+                let stringEnd = showKey.length;
+                let subString = initialValue.substring(stringStart, stringStart + stringEnd);
+                let regExp = new RegExp(subString, 'g');
+
+                markup = initialValue.replace(regExp, value);
+                return markup;
+            }
+
+            return '';
+        }
+
+
+
+        function CheckSpecialRulesTemplate(element)
+        {
+            if(element.is('option') || element.is('li'))
+            {
+                element.remove();
+            }
+        }
+
+         self.elements.findByItemKey = function(key, value)
+        {
+
+            var element = undefined;
+
+            $(this).each(function(e){
+
+                let currentElement = $(this);
+               
+                let jsonItem = $('[data-simple-json-item]', currentElement);
+
+                if(jsonItem)
+                {
+                    let dataAttr = jsonItem.data().jsonAttr;                 
+
+                    if(dataAttr == key)
+                    {
+                        let valueKey = jsonItem.attr(dataAttr);
+
+                        if(value == valueKey)
+                        {
+                            element = currentElement;
+                        }
+                    }
+                }
+            });
+
+            return element;
         }
 
         return this;

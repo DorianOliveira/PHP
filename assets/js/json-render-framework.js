@@ -16,19 +16,27 @@
         self.elements = [];
         self.template = [];
         self.container = [];
+        self.isList = false;
 
         self.currentData = self.data[settings.mainKey];
 
-       
+        
+        self.Update = function()
+        {
+            self.currentData = self.data[self.mainKey];
+            Mount();
+        }
 
         self.RenderJsonItem = function()
         {
+            self.isList = false;
             Mount();
         }
 
         self.RenderJsonList = function()
         {
-            Mount(true);
+            self.isList = true;
+            Mount();
         }
 
         self.ClearJsonDataList = function()
@@ -36,51 +44,66 @@
             
         }
 
-        self.ClearJsonDataItem = function(key, value)
+        self.RemoveItem = function(value)
         {
-            let elementToRemove = self.elements.findByItemKey(key, value);
-
-            if(elementToRemove)
-                elementToRemove.remove();
+            self.elements.Remove(value);
         }
 
-        function Mount(isList=false)
-        {
-            let template = $(self);
 
-            if(isList)
+        function Mount()
+        {
+
+            let templateItem = $(self);
+
+            
+
+            if(self.isList)
             { 
-                let templateData = template.data();
+                let templateData = templateItem.data();
 
                 if(templateData)
                 {
-                    let templateId = templateData.simpleJsonTemplate;
-                    let htmlContainer = template.closest('[data-simple-json-container=' + templateId + ']');
+                    let htmlContainer = templateItem.closest('[data-simple-json-container]');
+                    let dataSourceContainer = templateItem.closest('[data-simple-json-data-source]');
+
+                    let removeContainerOnEmpty = $('[data-simple-json-remove-on-empty]', htmlContainer);
                     let elementEmptyData = $('[data-simple-json-empty-data]', htmlContainer);
 
-                    elementEmptyData.hide();
+                    HideResource(elementEmptyData);
+       
+                    if(self.currentData == undefined || self.currentData == null){
+                            
+                        HideResource(removeContainerOnEmpty);
+                        ShowResource(elementEmptyData);
+                    }
 
-                    if(self.currentData != undefined && self.currentData != null)
+                    else
                     {
-                         if(self.currentData.length == 0)
-                        elementEmptyData.show(); 
+                        
+                        if(self.currentData.length == 0)
+                        {
+                            
+                            HideResource(removeContainerOnEmpty);
+                            ShowResource(elementEmptyData);  
+
+                        }
+
+                        ShowResource(dataSourceContainer);
 
                         //TODO: Test handling data (excluding and refreshing page)
-                        self.template = template;
-                        template.remove();
+                        self.template = templateItem;
+                        templateItem.remove();
                         
                         for(var item in self.currentData)
                         {
+                            let containerItem = templateItem.clone();
+                            
+                            ShowResource(containerItem);
 
-                            let templateClone = self.clone();
-                            let containerItem = templateClone;                            
-
-                            templateClone.show();
-                            htmlContainer.append(templateClone);
+                            dataSourceContainer.append(containerItem);
 
                             self.currentData = self.data[self.mainKey][item];
-                            self.elements.push(containerItem);
-                            
+                            self.elements.push(containerItem);                           
 
                             MountJsonItem(containerItem);
                         }
@@ -90,7 +113,6 @@
             else
             {
                 self.elements.push(containerItem);
-
                 MountJsonItem(containerItem);
             }
         }
@@ -107,21 +129,13 @@
 
             if(elementDataSource.length > 0)
             {
+
                 elementDataSource.each(function(){
 
-                    let children = $('[data-simple-json-template]', this);
+                    let children = $('[data-simple-json-item]', this);
                     let dataSourceKey = $(this).data().simpleJsonDataSource;
-                    
-                    // console.log($(this));
-                    // console.log('children:');
 
                     children.each(function(e){
-
-                        // console.log($(this));
-                        // console.log(self.currentData);
-                        // console.log(dataSource);
-
-                        //console.log(self.currentData[dataSourceKey]);
 
                         let target = $(this).RenderJson({
                             data: self.currentData,
@@ -129,104 +143,22 @@
                         });
 
                         target.RenderJsonList();
-
                     });
                 });
             }
 
+
+
+            //TODO: Check if HTML contains a key that not exists in JSON. Problem: The markup (sample: {@key}) not is replace, and...
+            //...the render have a wrong behavior.
             for(var key in self.currentData)
             {
-
                 let value = jsonData[key];
 
-                if(value != undefined && value != null)
-                {
-                    GetMarkup(currentElement, key, value);
-                    GetMarkupAttributes(currentElement, key, value);    
-                }
-                
+                if(value == undefined || value == null)
+                    value = '';
 
-                // console.log(key + ' - ' + value);
-                
-                if(currentElement.is('option'))
-                {
-
-                    // console.log(currentElement);
-                    // console.log(value);
-                }
-
-               
-
-                //let currentElementKey = currentElement.data().simpleJsonKey;
-                //let currentElementDataSource = currentElement.data().simpleJsonDataSource;
-                    
-
-
-
-                // if(currentElementDataSource == key)
-                // {
-
-                //     element_data_source.each(function(e){
-
-                //         // let data_source_option = $(this).data().simpleJsonSourceOption;
-                //         // let data_source_values = $(this).data().simpleJsonSourceValues;
-                //         // let data_source_clear_on_load = element_data_source.data().simpleJsonSourceClearOnLoad;
-                //         // let data_source_first_item_text = element_data_source.data().simpleJsonSourceFirstItemText;
-
-                //         if(data_source_clear_on_load)
-                //         {
-                            
-                //         }
-                //         if(data_source_first_item_text != null && data_source_first_item_text != '')
-                //         {
-                //         }
-
-                //         for(var item in value)
-                //         {
-                //             let current_item = value[item];
-                //             let child_element = '';
-
-                //             // if(data_source_option == 'option')
-                //             // {
-                //             //     child_element = $('<option />');
-                    
-
-                //             //     for(var option in data_source_values)
-                //             //     {
-                //             //         let json_key = data_source_values[option];
-                //             //         let new_value = current_item[json_key];
-
-                //             //         if(option == 'value')
-                //             //         {
-                //             //             child_element.attr('value', new_value);    
-                //             //         }
-                //             //         else if(option == 'text')
-                //             //         {
-                //             //             child_element.text(new_value);
-                //             //         }
-                //             //         else if(option == 'html')
-                //             //         {
-                //             //             child_element.html(new_value);
-                //             //         }
-                //             //     }
-                //             // }
-
-                //             $(this).append(child_element);
-                //         }
-                //     });
-                // }
-
-                //let child = $(data_set_json_key, currentElement);
-                // let childDataSource = $(data_set_json_source, currentElement);
-
-                // child.each(function(e){
-                //     //MountJsonItem($(this));
-                // });
-
-                // childDataSource.each(function(e){
-                //     MountJsonItem($(this));
-                // })
-
+                GetMarkup(currentElement, key, value);
             }
         }
 
@@ -236,6 +168,19 @@
                 || this == undefined
                 || this == null;
         }
+
+        function ShowResource(resource)
+        {
+            $(resource).show();
+            $(resource).addClass('active');
+        }
+
+        function HideResource(resource)
+        {
+            $(resource).hide();
+            $(resource).removeClass('active');
+        }
+
 
         function IsNullOrEmpty(element)
         {
@@ -247,32 +192,45 @@
         function GetMarkup(element, key, value)
         {
             let currentElement = $(element);
-            let children = currentElement.children();
+            
+            
             let markup =
                 ReplaceMarkup(
                         currentElement.html(),
                         key,
                         value);
 
-
             if(markup != '')
                 currentElement.html(markup);
+
+
+            GetMarkupAttributes(currentElement, key, value);
+
         }
 
         function GetMarkupAttributes(element, key, value)
         {
             let currentElement = $(element);
-            let attributes = currentElement.attributes;
-
-            let children = currentElement.children();
-
+            let attributes = currentElement.get(0).attributes;
 
             for( var attribute in attributes)
             {
-                 let markup = ReplaceMarkup(currentElement.attr(attribute), key, value);
+                let attributeName = attributes[attribute]['name'];
+                
+                
+                if(attributeName)
+                {
 
-                 if(markup != '')
-                    currentElement.attr(attribute, markup);
+                    let elementAttribute = currentElement.attr(attributeName);
+
+                    if(elementAttribute)
+                    {
+                        let markup = ReplaceMarkup(elementAttribute, key, value);
+
+                        if(markup != '')
+                            currentElement.attr(attributeName, markup);
+                    }
+                }
             }
         }
 
@@ -308,34 +266,42 @@
             }
         }
 
-         self.elements.findByItemKey = function(key, value)
+        self.elements.FindByItemKeyValue = function(value)
         {
 
             var element = undefined;
 
-            $(this).each(function(e){
+            $(this).each(function(index){
 
                 let currentElement = $(this);
-               
-                let jsonItem = $('[data-simple-json-item]', currentElement);
+                let dataItem = currentElement.data().simpleJsonItem;
 
-                if(jsonItem)
-                {
-                    let dataAttr = jsonItem.data().jsonAttr;                 
-
-                    if(dataAttr == key)
-                    {
-                        let valueKey = jsonItem.attr(dataAttr);
-
-                        if(value == valueKey)
-                        {
-                            element = currentElement;
-                        }
-                    }
-                }
+                if(dataItem && dataItem == value)
+                    element = currentElement;
+                
             });
 
             return element;
+        }
+
+        self.elements.Remove = function(value, removeFromDom=true)
+        {
+            $(this).each(function(index){
+
+                let currentElement = $(this);
+                let dataItem = currentElement.data().simpleJsonItem;
+
+                if(dataItem == value)
+                {
+
+                    self.elements.splice(index, 1);
+
+                    if(removeFromDom)
+                        currentElement.remove();
+                }
+
+
+            });
         }
 
         return this;

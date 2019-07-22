@@ -10,11 +10,17 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '\projetos\php2\header.php') ?>
 
 		<div class="col-md-8">
 		<section class="default-box container-reference" data-simple-json-container="template-reference">
-			<div class="template-reference" data-simple-json-template="template-reference">
-				<h3>{@name}</h3>
-				<p>{@description}</p>
-				<hr>
+			
+			<div data-simple-json-data-source>
+				<div class="template-reference" data-simple-json-item="{@id}">
+					<h4 id="{@id}">{@name}
+
+					</h4>
+					<p>{@description}</p>
+					<hr>
+				</div>	
 			</div>
+			
 
 		</section>
 	</div>

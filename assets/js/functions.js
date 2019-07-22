@@ -9,23 +9,23 @@ $(document).ready(function(e){
 
     // menu.RenderJsonList();
 
-    levels = $('.levels-template');
+    // levels = $('.levels-template');
 
-    levels.RenderJson({
-    	data: json3Levels.result,
-    	mainKey: 'pessoas'
+    // levels.RenderJson({
+    // 	data: json3Levels.result,
+    // 	mainKey: 'pessoas'
+    // });
+
+    // levels.RenderJsonList();
+
+    reference = $('.template-reference');
+	
+	reference.RenderJson({
+    	data: jsonReference.result,
+    	mainKey: 'items'
     });
 
-    levels.RenderJsonList();
-
- //    let reference = $('.template-reference');
-	
-	// reference.RenderJson({
- //    	data: jsonReference.result,
- //    	mainKey: 'items'
- //    });
-
- //    reference.RenderJsonList();
+    reference.RenderJsonList();
 
 
 

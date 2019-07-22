@@ -32,6 +32,27 @@ var jsonReference =
             
         ]    
     }
+};
+
+var jsonReference2 = 
+{
+    result:
+    {
+        items:
+        [
+            {
+                id: 1,
+                name: 'data-simple-json-data-source',
+                description : 'Determine if the element is a DATA SOURCE. Is the container of the ITEMS'
+            },
+            {
+                id: 2,
+                name: 'data-simple-json-container',
+                description : 'Default container of the contents. All the elements should be put within this elements.'
+            }
+            
+        ]    
+    }
 }
 
 var listJson = 

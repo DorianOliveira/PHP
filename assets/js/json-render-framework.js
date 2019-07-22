@@ -11,32 +11,38 @@
 
         }, options);
 
-        self.data = settings.data;
-        self.mainKey = settings.mainKey;
+        self.settings = settings;
         self.elements = [];
-        self.template = [];
         self.container = [];
-        self.isList = false;
-
-        self.currentData = self.data[settings.mainKey];
-
         
-        self.Update = function()
+
+        Init = function()
         {
-            self.currentData = self.data[self.mainKey];
+            self.data = self.settings.data;
+            self.mainKey = self.settings.mainKey;
+            self.currentData = self.data[self.settings.mainKey];
+            self.elements = [];
+            self.container = [];
+
             Mount();
+        }
+
+        self.Update = function(data)
+        {
+            self.data = data;
+            Init();
         }
 
         self.RenderJsonItem = function()
         {
             self.isList = false;
-            Mount();
+            Init();
         }
 
         self.RenderJsonList = function()
         {
             self.isList = true;
-            Mount();
+            Init();
         }
 
         self.ClearJsonDataList = function()
@@ -52,10 +58,7 @@
 
         function Mount()
         {
-
             let templateItem = $(self);
-
-            
 
             if(self.isList)
             { 
@@ -70,7 +73,7 @@
                     let elementEmptyData = $('[data-simple-json-empty-data]', htmlContainer);
 
                     HideResource(elementEmptyData);
-       
+
                     if(self.currentData == undefined || self.currentData == null){
                             
                         HideResource(removeContainerOnEmpty);
@@ -79,19 +82,15 @@
 
                     else
                     {
-                        
                         if(self.currentData.length == 0)
                         {
                             
                             HideResource(removeContainerOnEmpty);
                             ShowResource(elementEmptyData);  
-
                         }
 
                         ShowResource(dataSourceContainer);
 
-                        //TODO: Test handling data (excluding and refreshing page)
-                        self.template = templateItem;
                         templateItem.remove();
                         
                         for(var item in self.currentData)
@@ -101,6 +100,7 @@
                             ShowResource(containerItem);
 
                             dataSourceContainer.append(containerItem);
+
 
                             self.currentData = self.data[self.mainKey][item];
                             self.elements.push(containerItem);                           
@@ -124,7 +124,6 @@
             let currentElement = $(target);
 
             let dataSourceSelector = '[data-simple-json-data-source]:first';
-
             let elementDataSource = $(dataSourceSelector, currentElement);
 
             if(elementDataSource.length > 0)
@@ -146,8 +145,6 @@
                     });
                 });
             }
-
-
 
             //TODO: Check if HTML contains a key that not exists in JSON. Problem: The markup (sample: {@key}) not is replace, and...
             //...the render have a wrong behavior.

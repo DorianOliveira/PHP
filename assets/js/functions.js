@@ -1,22 +1,22 @@
 $(document).ready(function(e){
 
-    // let menu = $('.json-template-menu');
+    let menu = $('.json-template-menu');
 
-    // menu.RenderJson({
-    //     data: jsonMenu.result,
-    //     mainKey: 'items'
-    // });
+    menu.RenderJson({
+        data: jsonMenu.result,
+        mainKey: 'items'
+    });
 
-    // menu.RenderJsonList();
+    menu.RenderJsonList();
 
-    // levels = $('.levels-template');
+    levels = $('.levels-template');
 
-    // levels.RenderJson({
-    // 	data: json3Levels.result,
-    // 	mainKey: 'pessoas'
-    // });
+    levels.RenderJson({
+    	data: json3Levels.result,
+    	mainKey: 'pessoas'
+    });
 
-    // levels.RenderJsonList();
+    levels.RenderJsonList();
 
     reference = $('.template-reference');
 	

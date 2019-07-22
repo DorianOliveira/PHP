@@ -11,11 +11,14 @@
 			<span class="navbar-toggler-icon"></span>
 	</button>
 
-	<div class="collapse navbar-collapse" id="main-navbar">
-		<ul class="navbar-nav mr-auto" data-simple-json-container="menu-principal">
+	<div class="collapse navbar-collapse" id="main-navbar" data-simple-json-container="menu-principal">
+
+
+		<ul class="navbar-nav mr-auto" data-simple-json-data-source>
+
 			<li
 				class="nav-item json-template-menu"
-				data-simple-json-template="menu-principal">
+				data-simple-json-item>
 					<a class="nav-link" href="{@link}"> {@title}</a>
 			</li>
 		</ul>

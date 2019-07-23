@@ -28,5 +28,16 @@ $(document).ready(function(e){
     reference.RenderJsonList();
 
 
+    let singleSample = $('.single-data');
+
+    if(singleSample.length > 0)
+    {
+        singleSample.RenderJson({
+            data: singleJson,
+            mainKey: 'result'
+        });
+
+        singleSample.RenderJsonItem();
+    }     
 
 });

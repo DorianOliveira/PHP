@@ -29,7 +29,6 @@ var jsonReference =
                 name: 'data-simple-json-remove-on-empty',
                 description: 'This DataSet attribute says that element should be hide weather no elements found in DATA SOURCE'
             }
-            
         ]    
     }
 };
@@ -110,6 +109,7 @@ var json3Levels =
                         [
                             {id: 100, name: 'Chapter 1'},
                             {id: 101, name: 'Chapter 2'},
+                            {id: 102, name: 'Chapter 3'},
                         
                         ]
                     },
@@ -152,7 +152,8 @@ var jsonMenu =
         [
             {title: 'Home', link: '/projetos/php2/'},
             {title: '3 Levels', link: '/projetos/php2/screens/levels.php'},
-            {title: 'Reference', link: '/projetos/php2/screens/reference.php'}
+            {title: 'Reference', link: '/projetos/php2/screens/reference.php'},
+            {title: 'Single', link: '/projetos/php2/screens/single.php'}
         ]
         
     }

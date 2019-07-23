@@ -13,23 +13,37 @@
 
         self.settings = settings;
         self.elements = [];
-        self.container = [];
-        
+
+        self.initialItemTemplate = $(self);
+        self.initialContainer = self.initialItemTemplate.closest('[data-simple-json-container]');
+        self.initialDataSource = self.initialItemTemplate.closest('[data-simple-json-data-source]');
+        self.data = self.settings.data;
 
         Init = function()
         {
-            self.data = self.settings.data;
+            
             self.mainKey = self.settings.mainKey;
             self.currentData = self.data[self.settings.mainKey];
             self.elements = [];
-            self.container = [];
+
+            console.log(self.data);
 
             Mount();
         }
 
-        self.Update = function(data)
+        self.Clear = function()
         {
-            self.data = data;
+            $('[data-simple-json-item]', self.initialContainer).remove();
+            $('[data-simple-json-data-source]', self.initialContainer).remove();
+            self.elements = [];
+        }
+
+        self.Update = function(data = null)
+        {
+            if(data != null)
+                self.data = data;
+
+            self.Clear();
             Init();
         }
 
@@ -45,11 +59,6 @@
             Init();
         }
 
-        self.ClearJsonDataList = function()
-        {
-            
-        }
-
         self.RemoveItem = function(value)
         {
             self.elements.Remove(value);
@@ -58,24 +67,41 @@
 
         function Mount()
         {
-            let templateItem = $(self);
+            $(self).remove();
+            $(self.initialDataSource).remove();
+
+
 
             if(self.isList)
             { 
-                let templateData = templateItem.data();
+
+                let templateData = self.initialItemTemplate.data();
+
+
+
 
                 if(templateData)
                 {
-                    let htmlContainer = templateItem.closest('[data-simple-json-container]');
-                    let dataSourceContainer = templateItem.closest('[data-simple-json-data-source]');
 
-                    let removeContainerOnEmpty = $('[data-simple-json-remove-on-empty]', htmlContainer);
-                    let elementEmptyData = $('[data-simple-json-empty-data]', htmlContainer);
+                    // let htmlContainer = templateItem.closest('[data-simple-json-container]');
+                    // let dataSourceContainer = templateItem.closest('[data-simple-json-data-source]');
+
+                    //self.initialItemTemplate = templateItem;
+                    //self.initialDataSource = dataSourceContainer;
+                    //self.initialContainer = htmlContainer;
+
+                    //templateItem.remove();
+
+
+                    let removeContainerOnEmpty = $('[data-simple-json-remove-on-empty]', self.initialContainer);
+                    let elementEmptyData = $('[data-simple-json-empty-data]', self.initialContainer);
 
                     HideResource(elementEmptyData);
 
+                    //console.log(self.currentData);
+
                     if(self.currentData == undefined || self.currentData == null){
-                            
+
                         HideResource(removeContainerOnEmpty);
                         ShowResource(elementEmptyData);
                     }
@@ -89,17 +115,23 @@
                             ShowResource(elementEmptyData);  
                         }
 
-                        ShowResource(dataSourceContainer);
 
-                        templateItem.remove();
-                        
+
+                        ShowResource(self.initialDataSource);
+
+                        let cloneDataSource = self.initialDataSource.clone();
+                        self.initialContainer.append(cloneDataSource);
+
                         for(var item in self.currentData)
                         {
-                            let containerItem = templateItem.clone();
+                            let containerItem = self.initialItemTemplate.clone();
                             
+
                             ShowResource(containerItem);
 
-                            dataSourceContainer.append(containerItem);
+
+                            
+                            cloneDataSource.append(containerItem);
 
 
                             self.currentData = self.data[self.mainKey][item];
@@ -112,7 +144,13 @@
             }
             else
             {
+                let containerItem = self.initialItemTemplate.clone();
+
                 self.elements.push(containerItem);
+
+                $(self.initialContainer).append(containerItem);
+
+                ShowResource(containerItem);
                 MountJsonItem(containerItem);
             }
         }
@@ -120,6 +158,7 @@
         
         function MountJsonItem(target)
         {
+
             let jsonData = self.currentData;
             let currentElement = $(target);
 
@@ -251,16 +290,6 @@
             }
 
             return '';
-        }
-
-
-
-        function CheckSpecialRulesTemplate(element)
-        {
-            if(element.is('option') || element.is('li'))
-            {
-                element.remove();
-            }
         }
 
         self.elements.FindByItemKeyValue = function(value)

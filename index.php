@@ -27,7 +27,7 @@ singleSample.RenderJsonItem();
 .EndScriptTag();
 
 $html_simple_list = htmlentities('
-<section data-simple-json-container="template-reference">
+<section data-simple-json-container>
 	<div data-simple-json-data-source>
 		<div class="template-reference" data-simple-json-item="{@id}">
 			<h4 id="{@id}">{@name}</h4>
@@ -62,6 +62,8 @@ function EndScriptTag()
 }
 
 ?>
+
+
 <h1>Simple Json JS Framework</h1>
 <p>The most basic && simple powerful solution to render JSON in a web application!</p>
 <div class="row">

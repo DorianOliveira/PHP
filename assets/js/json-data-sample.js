@@ -7,47 +7,17 @@ var jsonReference =
             {
                 id: 1,
                 name: 'data-simple-json-data-source',
-                description : 'Determine if the element is a DATA SOURCE. Is the container of the ITEMS'
+                description : 'Utilizado quando é necessário passsar dados para um outro container dentro de um template. O valor passado é a <strong>key</strong> que tem os itens no JSON. Se o item não for array dará Erraydo.'
             },
             {
                 id: 2,
                 name: 'data-simple-json-container',
-                description : 'Default container of the contents. All the elements should be put within this elements.'
+                description : 'É o container do template.'
             },
             {
                 id: 3,
-                name: 'data-simple-json-item',
-                description : 'The element template. This elements will be replicated for each element in the DATA SOURCE array. Allow CONTAINER and DATA SOURCE nested.'
-            },
-            {
-                id: 4,
-                name: 'data-simple-json-empty-data',
-                description: 'This element will be showed if no item reached from the DATA SOURCE'
-            },
-            {
-                id: 5,
-                name: 'data-simple-json-remove-on-empty',
-                description: 'This DataSet attribute says that element should be hide weather no elements found in DATA SOURCE'
-            }
-        ]    
-    }
-};
-
-var jsonReference2 = 
-{
-    result:
-    {
-        items:
-        [
-            {
-                id: 1,
-                name: 'data-simple-json-data-source',
-                description : 'Determine if the element is a DATA SOURCE. Is the container of the ITEMS'
-            },
-            {
-                id: 2,
-                name: 'data-simple-json-container',
-                description : 'Default container of the contents. All the elements should be put within this elements.'
+                name: 'data-simple-json-template',
+                description : 'É o template que terá o conteúdo replicado pelo framework. Item obrigatório.'
             }
             
         ]    
@@ -78,56 +48,37 @@ var json3Levels =
             {
                 id: 1,
                 name: 'Dorian',
-                // livros:
-                // [
-                //     {id: 1, title: 'O Senhor dos Anéis', 
-                //         capitulos:[ {id: 0, name: ''}]},
-                //     {id: 2, title: 'O Código da Vinci', 
-                //         capitulos:[ {id: 0, name: ''}]},
-                //     {id: 6, title: 'Assassin´s Creed', 
-                //         capitulos:[ {id: 0, name: ''}]},
-                //     {id: 8, title: 'Monte Cinco',
-                //         capitulos:
-                //         [
-                //             {id: 103, name: 'Chapter 1'},
-                //             {id: 104, name: 'Chapter 2'},
-                //             {id: 105, name: 'Chapter 3'}
-                //         ]}
+                livros:
+                [
+                    {id: 1, title: 'O Senhor dos Anéis'},
+                    {id: 2, title: 'O Código da Vinci'},
+                    {id: 6, title: 'Assassin´s Creed'},
+                    {id: 8, title: 'Monte Cinco'}
 
 
-                // ]
+                ]
             },
             {
                 id: 2,
                 name: 'Paula',
                 livros:
                 [
-                    {
-                        id: 7,
-                        title: 'A Menina que Roubava Livros',
-                        capitulos:
-                        [
-                            {id: 100, name: 'Chapter 1'},
-                            {id: 101, name: 'Chapter 2'},
-                            {id: 102, name: 'Chapter 3'},
-                        
-                        ]
-                    },
+                    {id: 7, title: 'A Menina que Roubava Livros'},
                     {id: 9, title: 'O Símbolo Sagrado'},
                 ]
             },
 
-            // {
-            //     id: 2,
-            //     name: 'John',
-            //     livros:
-            //     [
-            //         {id: 11, title: 'Poder sem Limites', capitulos:[]},
-            //         {id: 12, title: 'O Segredo'},
-            //         {id: 13, title: 'A Volta dos Que Não Foram'},
+            {
+                id: 2,
+                name: 'John',
+                livros:
+                [
+                    {id: 11, title: 'Poder sem Limites'},
+                    {id: 12, title: 'O Segredo'},
+                    {id: 13, title: 'A Volta dos Que Não Foram'},
 
-            //     ]
-            // },
+                ]
+            },
 
 
         ]
@@ -152,8 +103,7 @@ var jsonMenu =
         [
             {title: 'Home', link: '/projetos/php2/'},
             {title: '3 Levels', link: '/projetos/php2/screens/levels.php'},
-            {title: 'Reference', link: '/projetos/php2/screens/reference.php'},
-            {title: 'Single', link: '/projetos/php2/screens/single.php'}
+            {title: 'Reference', link: '/projetos/php2/screens/reference.php'}
         ]
         
     }

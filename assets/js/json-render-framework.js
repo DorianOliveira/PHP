@@ -11,190 +11,113 @@
 
         }, options);
 
-        self.settings = settings;
+        self.data = settings.data;
+        self.mainKey = settings.mainKey;
         self.elements = [];
+        self.template = [];
+        self.container = [];
 
-        self.initialItemTemplate = $(self);
-        self.initialContainer = self.initialItemTemplate.closest('[data-simple-json-container]');
-        self.initialDataSource = self.initialItemTemplate.closest('[data-simple-json-data-source]');
-        self.data = self.settings.data;
+        self.currentData = self.data[settings.mainKey];
 
-        Init = function()
+        self.elements.findByItemKey = function(key, value)
         {
-            
-            self.mainKey = self.settings.mainKey;
-            self.currentData = self.data[self.settings.mainKey];
-            self.elements = [];
 
-            console.log(self.data);
+            var element = undefined;
 
-            Mount();
-        }
+            $(this).each(function(e){
 
-        self.Clear = function()
-        {
-            $('[data-simple-json-item]', self.initialContainer).remove();
-            $('[data-simple-json-data-source]', self.initialContainer).remove();
-            self.elements = [];
-        }
+                let currentElement = $(this);
+               
+                let jsonItem = $('[data-simple-json-item]', currentElement);
 
-        self.Update = function(data = null)
-        {
-            if(data != null)
-                self.data = data;
+                if(jsonItem)
+                {
+                    let dataAttr = jsonItem.data().jsonAttr;                 
 
-            self.Clear();
-            Init();
+                    if(dataAttr == key)
+                    {
+                        let valueKey = jsonItem.attr(dataAttr);
+
+                        if(value == valueKey)
+                        {
+                            element = currentElement;
+                        }
+                    }
+                }
+            });
+
+            return element;
         }
 
         self.RenderJsonItem = function()
         {
-            self.isList = false;
-            Init();
+            Mount();
         }
 
         self.RenderJsonList = function()
         {
-            self.isList = true;
-            Init();
+            Mount(true);
         }
 
-        self.RemoveItem = function(value)
+        self.ClearJsonDataList = function()
         {
-            self.elements.Remove(value);
+            
         }
 
-
-        function Mount()
+        self.ClearJsonDataItem = function(key, value)
         {
-            $(self).remove();
-            $(self.initialDataSource).remove();
+            let elementToRemove = self.elements.findByItemKey(key, value);
 
+            if(elementToRemove)
+                elementToRemove.remove();
+        }
 
+        function Mount(isList=false)
+        {
+            let template = $(self);
 
-            if(self.isList)
+            if(isList)
             { 
-
-                let templateData = self.initialItemTemplate.data();
-
-
-
+                let templateData = template.data();
 
                 if(templateData)
                 {
+                    let templateId = templateData.simpleJsonTemplate;
+                    let htmlContainer = $('[data-simple-json-container=' + templateId + ']');
+                    let elementEmptyData = $('[data-simple-json-empty-data]', htmlContainer);
 
-                    // let htmlContainer = templateItem.closest('[data-simple-json-container]');
-                    // let dataSourceContainer = templateItem.closest('[data-simple-json-data-source]');
+                    elementEmptyData.hide();
 
-                    //self.initialItemTemplate = templateItem;
-                    //self.initialDataSource = dataSourceContainer;
-                    //self.initialContainer = htmlContainer;
+                    if(self.currentData.length == 0)
+                        elementEmptyData.show(); 
 
-                    //templateItem.remove();
+                    self.template = template;
+                    template.remove();
 
+                    
 
-                    let removeContainerOnEmpty = $('[data-simple-json-remove-on-empty]', self.initialContainer);
-                    let elementEmptyData = $('[data-simple-json-empty-data]', self.initialContainer);
-
-                    HideResource(elementEmptyData);
-
-                    //console.log(self.currentData);
-
-                    if(self.currentData == undefined || self.currentData == null){
-
-                        HideResource(removeContainerOnEmpty);
-                        ShowResource(elementEmptyData);
-                    }
-
-                    else
+                    for(var item in self.currentData)
                     {
-                        if(self.currentData.length == 0)
-                        {
-                            
-                            HideResource(removeContainerOnEmpty);
-                            ShowResource(elementEmptyData);  
-                        }
+                        console.log(self.currentData);
 
+                        let templateClone = self.clone();
+                        let containerItem = templateClone;                            
 
+                        templateClone.show();
+                        htmlContainer.append(templateClone);
 
-                        ShowResource(self.initialDataSource);
-
-                        let cloneDataSource = self.initialDataSource.clone();
-                        self.initialContainer.append(cloneDataSource);
-
-                        for(var item in self.currentData)
-                        {
-                            let containerItem = self.initialItemTemplate.clone();
-                            
-
-                            ShowResource(containerItem);
-
-
-                            
-                            cloneDataSource.append(containerItem);
-
-
-                            self.currentData = self.data[self.mainKey][item];
-                            self.elements.push(containerItem);                           
-
-                            MountJsonItem(containerItem);
-                        }
+                        self.currentData = self.data[self.mainKey][item];
+                        self.elements.push(containerItem);
+                        
+                        MountJsonItem(containerItem);
                     }
                 }
             }
             else
             {
-                let containerItem = self.initialItemTemplate.clone();
-
                 self.elements.push(containerItem);
-
-                $(self.initialContainer).append(containerItem);
-
-                ShowResource(containerItem);
                 MountJsonItem(containerItem);
-            }
-        }
-
-        
-        function MountJsonItem(target)
-        {
-
-            let jsonData = self.currentData;
-            let currentElement = $(target);
-
-            let dataSourceSelector = '[data-simple-json-data-source]:first';
-            let elementDataSource = $(dataSourceSelector, currentElement);
-
-            if(elementDataSource.length > 0)
-            {
-
-                elementDataSource.each(function(){
-
-                    let children = $('[data-simple-json-item]', this);
-                    let dataSourceKey = $(this).data().simpleJsonDataSource;
-
-                    children.each(function(e){
-
-                        let target = $(this).RenderJson({
-                            data: self.currentData,
-                            mainKey: dataSourceKey
-                        });
-
-                        target.RenderJsonList();
-                    });
-                });
-            }
-
-            //TODO: Check if HTML contains a key that not exists in JSON. Problem: The markup (sample: {@key}) not is replace, and...
-            //...the render have a wrong behavior.
-            for(var key in self.currentData)
-            {
-                let value = jsonData[key];
-
-                if(value == undefined || value == null)
-                    value = '';
-
-                GetMarkup(currentElement, key, value);
+                
             }
         }
 
@@ -205,19 +128,6 @@
                 || this == null;
         }
 
-        function ShowResource(resource)
-        {
-            $(resource).show();
-            $(resource).addClass('active');
-        }
-
-        function HideResource(resource)
-        {
-            $(resource).hide();
-            $(resource).removeClass('active');
-        }
-
-
         function IsNullOrEmpty(element)
         {
             return element == '' 
@@ -225,48 +135,37 @@
                 || element == null;
         }
 
+
+
         function GetMarkup(element, key, value)
         {
             let currentElement = $(element);
-            
-            
+            let children = currentElement.children();
             let markup =
                 ReplaceMarkup(
                         currentElement.html(),
                         key,
                         value);
 
+
             if(markup != '')
                 currentElement.html(markup);
-
-
-            GetMarkupAttributes(currentElement, key, value);
-
         }
 
         function GetMarkupAttributes(element, key, value)
         {
             let currentElement = $(element);
-            let attributes = currentElement.get(0).attributes;
+            let attributes = currentElement.attributes;
+
+            let children = currentElement.children();
+
 
             for( var attribute in attributes)
             {
-                let attributeName = attributes[attribute]['name'];
-                
-                
-                if(attributeName)
-                {
+                 let markup = ReplaceMarkup(currentElement.attr(attribute), key, value);
 
-                    let elementAttribute = currentElement.attr(attributeName);
-
-                    if(elementAttribute)
-                    {
-                        let markup = ReplaceMarkup(elementAttribute, key, value);
-
-                        if(markup != '')
-                            currentElement.attr(attributeName, markup);
-                    }
-                }
+                 if(markup != '')
+                    currentElement.attr(attribute, markup);
             }
         }
 
@@ -292,42 +191,135 @@
             return '';
         }
 
-        self.elements.FindByItemKeyValue = function(value)
+
+
+        function CheckSpecialRulesTemplate(element)
         {
-
-            var element = undefined;
-
-            $(this).each(function(index){
-
-                let currentElement = $(this);
-                let dataItem = currentElement.data().simpleJsonItem;
-
-                if(dataItem && dataItem == value)
-                    element = currentElement;
-                
-            });
-
-            return element;
+            if(element.is('option') || element.is('li'))
+            {
+                element.remove();
+            }
         }
 
-        self.elements.Remove = function(value, removeFromDom=true)
+        function MountJsonItem(target)
         {
-            $(this).each(function(index){
+            let jsonData = self.currentData;
+            let currentElement = $(target);
 
-                let currentElement = $(this);
-                let dataItem = currentElement.data().simpleJsonItem;
+            let data_source_attribute = '[data-simple-json-data-source]';
 
-                if(dataItem == value)
+            let elementDataSource = $(data_source_attribute, currentElement);
+
+            if(elementDataSource.length > 0)
+            {
+                elementDataSource.each(function(){
+
+                    let children = $('[data-simple-json-template]', this);
+                    let data_soure = $(this).data().simpleJsonDataSource;
+                    
+                    children.each(function(e){
+
+                        
+                        let target = $(this).RenderJson({
+                            data: self.currentData,
+                            mainKey: data_soure
+                        });
+
+                        target.RenderJsonList();
+
+                    });
+                });
+            }
+
+            for(var key in self.currentData)
+            {
+
+                let value = jsonData[key];
+                GetMarkup(currentElement, key, value);
+                GetMarkupAttributes(currentElement, key, value);
+
+                // console.log(key + ' - ' + value);
+                
+                if(currentElement.is('option'))
                 {
 
-                    self.elements.splice(index, 1);
-
-                    if(removeFromDom)
-                        currentElement.remove();
+                    // console.log(currentElement);
+                    // console.log(value);
                 }
 
+               
 
-            });
+                //let currentElementKey = currentElement.data().simpleJsonKey;
+                //let currentElementDataSource = currentElement.data().simpleJsonDataSource;
+                    
+
+
+
+                // if(currentElementDataSource == key)
+                // {
+
+                //     element_data_source.each(function(e){
+
+                //         // let data_source_option = $(this).data().simpleJsonSourceOption;
+                //         // let data_source_values = $(this).data().simpleJsonSourceValues;
+                //         // let data_source_clear_on_load = element_data_source.data().simpleJsonSourceClearOnLoad;
+                //         // let data_source_first_item_text = element_data_source.data().simpleJsonSourceFirstItemText;
+
+                //         if(data_source_clear_on_load)
+                //         {
+                            
+                //         }
+                //         if(data_source_first_item_text != null && data_source_first_item_text != '')
+                //         {
+                //         }
+
+                //         for(var item in value)
+                //         {
+                //             let current_item = value[item];
+                //             let child_element = '';
+
+                //             // if(data_source_option == 'option')
+                //             // {
+                //             //     child_element = $('<option />');
+                    
+
+                //             //     for(var option in data_source_values)
+                //             //     {
+                //             //         let json_key = data_source_values[option];
+                //             //         let new_value = current_item[json_key];
+
+                //             //         if(option == 'value')
+                //             //         {
+                //             //             child_element.attr('value', new_value);    
+                //             //         }
+                //             //         else if(option == 'text')
+                //             //         {
+                //             //             child_element.text(new_value);
+                //             //         }
+                //             //         else if(option == 'html')
+                //             //         {
+                //             //             child_element.html(new_value);
+                //             //         }
+                //             //     }
+                //             // }
+
+                //             $(this).append(child_element);
+                //         }
+                //     });
+                // }
+
+                //let child = $(data_set_json_key, currentElement);
+                // let childDataSource = $(data_set_json_source, currentElement);
+
+                // child.each(function(e){
+                //     //MountJsonItem($(this));
+                // });
+
+                // childDataSource.each(function(e){
+                //     MountJsonItem($(this));
+                // })
+
+            }
         }
 
         return this;

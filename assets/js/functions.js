@@ -6,48 +6,44 @@ class Functions
     execute()
     {
 
-
-        a.print();
         $(document).ready(function(e){
 
-    // let menu = $('.json-template-menu');
+            // let menu = $('.json-template-menu');
 
-    // menu.RenderJson({
-    //     data: jsonMenu.result,
-    //     mainKey: 'items'
-    // });
+            // menu.RenderJson({
+            //     data: jsonMenu.result,
+            //     mainKey: 'items'
+            // });
 
-    // menu.RenderJsonList();
+            // menu.RenderJsonList();
 
-    levels = $('.levels-template');
+            // let levels = $('.levels-template');
 
-    levels.RenderJson({
-        data: json3Levels.result,
-        mainKey: 'pessoas'
-    });
+            // levels.RenderJson({
+            //     data: json3Levels.result,
+            //     mainKey: 'pessoas'
+            // });
 
-    levels.RenderJsonList();
+            // levels.RenderJsonList();
 
-    levels.onComplete(function(){
+            // levels.onComplete(function(){
 
-        console.log('Montou tudo!');
-    })
+            //     console.log('Montou tudo!');
+            // })
 
- //    let reference = $('.template-reference');
-    
-    // reference.RenderJson({
- //     data: jsonReference.result,
- //     mainKey: 'items'
- //    });
+            let reference = $('.template-reference');
+            
+            reference.RenderJson({
+             data: jsonReference.result,
+             mainKey: 'items'
+            });
 
- //    reference.RenderJsonList();
-
-
+            reference.RenderJsonList();
 
 
-
-});
+        });
     }
 }
 
-
+ let a = new Functions();
+ a.execute();

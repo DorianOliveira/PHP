@@ -1,7 +1,7 @@
 <?php
 
 
-require_once($_SERVER['DOCUMENT_ROOT'] . '\projetos\php2\header.php') ?>
+require_once($_SERVER["DOCUMENT_ROOT"] . '\projetos\php2\header.php') ?>
 
 <h2>Reference</h2>
 <p>Check this content to learn and apply correctly all available options in the Simple Json JS Framework. Enjoy!</p>
@@ -9,7 +9,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '\projetos\php2\header.php') ?>
 <section class="row">
 
 		<div class="col-md-8">
-		<section class="default-box container-reference" data-simple-json-container="template-reference">
+		<section class="default-box container-reference" data-simple-json-container>
 			
 			<div data-simple-json-data-source>
 				<div class="template-reference" data-simple-json-item="{@id}">

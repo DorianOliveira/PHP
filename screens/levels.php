@@ -1,5 +1,6 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . '\projetos\php\header.php') ?>
+echo 
+require_once($_SERVER["DOCUMENT_ROOT"] . '\projetos\php2\header.php') ?>
 
 <h2>Sample - Levels</h2>
 <p>In this sample, we have a 2 levels container: A list of people, with his particular book list. <strong>Check the code</strong>!</p>
@@ -52,5 +53,5 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '\projetos\php\header.php') ?>
 </section>
 
 
-<?php require_once($_SERVER['DOCUMENT_ROOT'] . '/projetos/php/footer.php') ?>
+<?php require_once(BASE_PATH . '/footer.php') ?>
 

@@ -15,7 +15,6 @@
         self.mainKey = settings.mainKey;
         self.elements = [];
         self.template = [];
-        self.container = [];
 
         self.currentData = self.data[settings.mainKey];
 
@@ -98,15 +97,17 @@
 
                     self.template = template;
                     template.remove();
-
                     
+
 
                     for(var item in self.currentData)
                     {
-                        console.log(self.currentData);
+                        
 
                         let templateClone = self.clone();
                         let containerItem = templateClone;                            
+
+                        console.log(self.currentData);
 
                         templateClone.show();
                         htmlContainer.append(templateClone);

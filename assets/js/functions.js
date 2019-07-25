@@ -28,11 +28,6 @@ class Functions
 
     levels.RenderJsonList();
 
-    levels.onComplete(function(){
-
-        console.log('Montou tudo!');
-    })
-
  //    let reference = $('.template-reference');
     
     // reference.RenderJson({

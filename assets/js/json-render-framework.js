@@ -64,11 +64,6 @@
             
         }
 
-        self.onComplete = function(event, data)
-        {
-            
-        }
-
         self.ClearJsonDataItem = function(key, value)
         {
             let elementToRemove = self.elements.findByItemKey(key, value);
@@ -124,8 +119,6 @@
                 MountJsonItem(containerItem);
                 
             }
-
-            self.trigger('onComplete');
         }
 
         String.prototype.isEmptyOfUndefined = function()
@@ -451,7 +444,7 @@
 //             element_data_source = $(data_set_json_source, $(this));
             
             
-//             //Se o elemento nï¿½o estiver vazio...
+//             //Se o elemento não estiver vazio...
 //             if(element.length > 0)
 //             {
 //                 let json_option = element.data().jsonOption;

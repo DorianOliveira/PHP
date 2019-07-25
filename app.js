@@ -16,7 +16,6 @@ export default class App
 {
 	Init()
 	{
-		console.log('teste');
 		this.Route();
 	}
 
@@ -24,10 +23,10 @@ export default class App
 	{
 		for(let index in Routes)
 		{
-			let currentRoute = Routes[index];
-
-			if(currentRoute == path)
-				return currentRoute;
+			if(index == path)
+			{
+				return Routes[index];
+			}
 		}
 
 		return DefaultRoutes['/404'];
@@ -43,8 +42,7 @@ export default class App
 		let fullOrigin = this.GetBaseUrl();
 		let path = location.href.substring(fullOrigin.length);
 
-		console.log(path);
-
+		
 		this.LoadTemplate(path);
 	}
 
@@ -54,12 +52,16 @@ export default class App
 		let baseUrl = this.GetBaseUrl();
 		let route = this.FindInRoutes(path);
 
-		console.log(route);
+		
 
 		let finalFetchUrl = baseUrl + route;
 
+		
+
 		let response = await fetch(finalFetchUrl);
 		let html = await response.text();
+
+		console.log(html);
 
 		$('#main-container').html(html);
 	}

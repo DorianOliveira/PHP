@@ -7,7 +7,16 @@
         var settings = $.extend({
 
             data: null,
-            mainKey: ''
+            mainKey: '',
+
+            complete: function()
+            {
+            },
+
+            init: function(currentData)
+            {
+
+            }
 
         }, options);
 
@@ -21,15 +30,16 @@
 
         Init = function()
         {
-            
+
             self.mainKey = self.settings.mainKey;
             self.currentData = self.data[self.settings.mainKey];
             self.elements = [];
 
-            console.log(self.data);
+            self.settings.init.call(self.currentData);
 
             Mount();
         }
+
 
         self.Clear = function()
         {
@@ -65,12 +75,12 @@
         }
 
 
+
+
         function Mount()
         {
             $(self).remove();
             $(self.initialDataSource).remove();
-
-
 
             if(self.isList)
             { 
@@ -153,6 +163,9 @@
                 ShowResource(containerItem);
                 MountJsonItem(containerItem);
             }
+
+            self.settings.complete.call();
+                
         }
 
         

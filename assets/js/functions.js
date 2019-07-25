@@ -94,9 +94,7 @@ class Functions
 
             reference.RenderJsonList();
 
-            setTimeout(function(){
-                reference.Clear();
-            }, 3000);
+            
 
 
         });

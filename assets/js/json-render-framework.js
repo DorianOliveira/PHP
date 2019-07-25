@@ -112,7 +112,6 @@
 
                 if(templateData)
                 {
-
                     let removeContainerOnEmpty = $('[data-simple-json-remove-on-empty]', self.initialContainer);
                     let elementEmptyData = $('[data-simple-json-empty-data]', self.initialContainer);
 
@@ -143,13 +142,9 @@
                         {
                             let containerItem = self.initialItemTemplate.clone();
                             
-
                             ShowResource(containerItem);
 
-
-                            
                             cloneDataSource.append(containerItem);
-
 
                             self.currentData = self.data[self.mainKey][item];
                             self.elements.push(containerItem);                           

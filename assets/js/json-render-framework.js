@@ -9,14 +9,35 @@
             data: null,
             mainKey: '',
 
-            complete: function()
+            complete: function(self)
             {
             },
 
-            init: function(currentData)
+            init: function(self, currentData)
             {
+            },
 
-            }
+            onRenderKeyValue: function(currentElement, key, value)
+            {
+            },
+
+            onRenderItem: function(data, element)
+            {
+            },
+
+            onRenderDataSource: function(data, dataSourceKey, children)
+            {
+            },
+
+            beforeClear: function(self, elements)
+            {
+            },
+
+            afterClear: function(self)
+            {
+            },
+
+            
 
         }, options);
 
@@ -43,9 +64,13 @@
 
         self.Clear = function()
         {
+            self.settings.beforeClear.call(self, self.elements);
+
             $('[data-simple-json-item]', self.initialContainer).remove();
             $('[data-simple-json-data-source]', self.initialContainer).remove();
             self.elements = [];
+
+            self.settings.afterClear.call(self);
         }
 
         self.Update = function(data = null)
@@ -75,8 +100,6 @@
         }
 
 
-
-
         function Mount()
         {
             $(self).remove();
@@ -87,28 +110,13 @@
 
                 let templateData = self.initialItemTemplate.data();
 
-
-
-
                 if(templateData)
                 {
-
-                    // let htmlContainer = templateItem.closest('[data-simple-json-container]');
-                    // let dataSourceContainer = templateItem.closest('[data-simple-json-data-source]');
-
-                    //self.initialItemTemplate = templateItem;
-                    //self.initialDataSource = dataSourceContainer;
-                    //self.initialContainer = htmlContainer;
-
-                    //templateItem.remove();
-
 
                     let removeContainerOnEmpty = $('[data-simple-json-remove-on-empty]', self.initialContainer);
                     let elementEmptyData = $('[data-simple-json-empty-data]', self.initialContainer);
 
                     HideResource(elementEmptyData);
-
-                    //console.log(self.currentData);
 
                     if(self.currentData == undefined || self.currentData == null){
 
@@ -124,7 +132,6 @@
                             HideResource(removeContainerOnEmpty);
                             ShowResource(elementEmptyData);  
                         }
-
 
 
                         ShowResource(self.initialDataSource);
@@ -164,7 +171,7 @@
                 MountJsonItem(containerItem);
             }
 
-            self.settings.complete.call();
+            self.settings.complete.call(self);
                 
         }
 
@@ -185,6 +192,8 @@
 
                     let children = $('[data-simple-json-item]', this);
                     let dataSourceKey = $(this).data().simpleJsonDataSource;
+
+                    self.settings.onRenderDataSource.call(self.currentData, dataSourceKey, children);
 
                     children.each(function(e){
 
@@ -208,7 +217,11 @@
                     value = '';
 
                 GetMarkup(currentElement, key, value);
+
+                self.settings.onRenderKeyValue.call(currentElement, key, value);
             }
+            //console.log(jsonData);
+            self.settings.onRenderItem.call(jsonData, currentElement);
         }
 
         String.prototype.isEmptyOfUndefined = function()
@@ -338,7 +351,6 @@
                     if(removeFromDom)
                         currentElement.remove();
                 }
-
 
             });
         }

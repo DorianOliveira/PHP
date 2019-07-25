@@ -46,18 +46,57 @@ class Functions
 
                 complete: function()
                 {
-                    console.log('Finalizou');
-                    
+                    //console.log($(this));
                 },
 
-                init: function(data)
+                init: function()
                 {
-                    console.log('iniciou');
-                    console.log(data);
+                    //console.log($(this));
+                    //console.log(data);
+                    // console.log('iniciou');
+                    // console.log(data);
+                },
+
+                onRenderKeyValue: function(key, value)
+                {
+                    // console.log($(this));
+                    // console.log(key);
+                    // console.log(value);
+                    // console.log(value);
+                },
+                onRenderItem: function(element)
+                {
+                    // console.log($(this));
+                    // console.log(element);
+
+                },
+
+                onRenderDataSource: function(data, dataSourceKey, children)
+                {
+                    // console.log(data);
+                    // console.log(dataSourceKey);
+                    // console.log(children);
+                },
+
+                beforeClear: function(elements)
+                {
+                    console.log('Antes de apagar');
+                    console.log($(this));
+                    console.log(elements);
+                },
+
+                afterClear: function()
+                {
+                    console.log('terminou de apagar');
+                    console.log($(this));
                 }
             });
 
             reference.RenderJsonList();
+
+            setTimeout(function(){
+                reference.Clear();
+            }, 3000);
 
 
         });

@@ -1,5 +1,5 @@
 
-<?php require_once('header.php');
+<?php require_once($_SERVER['DOCUMENT_ROOT'] . '/projetos/php2/header.php');
 
 
 $html_basic_sample =  htmlentities('
@@ -110,4 +110,4 @@ function EndScriptTag()
 
 
 
-<?php require_once('footer.php');
+<?php require_once(BASE_PATH . 'footer.php');

@@ -28,5 +28,5 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '\projetos\php2\header.php') ?>
 </section>
 
 
-<?php require_once($_SERVER['DOCUMENT_ROOT'] . '/projetos/php2/footer.php') ?>
+<?php require_once(BASE_PATH . '/footer.php') ?>
 

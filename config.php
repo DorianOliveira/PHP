@@ -1,21 +1,35 @@
+<?php
 
-<!doctype html>
-<html lang="pt-br">
-	<head>
-	  	<meta charset="iso-8859-1">
+define('APP_FOLDER', '/projetos/php2');
 
-	  	<title>Testes</title>
-	  	<link href="/projetos/php2/assets/bootstrap/css/bootstrap.css" rel="stylesheet">
-	  	<link href="/projetos/php2/assets/css/styles.css" rel="stylesheet">
+function getProtocol()
+{
+	$protocol = '';
+	if(isset($_SERVER['HTTPS']))
+		$protocol = ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
+	else
+		$protocol = 'http';	
 
-		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/styles/default.min.css">
-		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
+	return $protocol . '://';
+}
 
-		<script type="module" src="app.js"></script>
-	</head>
+function getHost()
+{
+	return $_SERVER['HTTP_HOST'] . APP_FOLDER;
+}
 
-	<body>
-	
-	<?php require_once($_SERVER['DOCUMENT_ROOT'] . '/projetos/php2/components/menu.php'); ?>
 
-	<div class="container-fluid">
+function getBaseUrl()
+{
+	return getProtocol() . getHost();
+}
+
+function getBasePath()
+{
+	return $_SERVER['DOCUMENT_ROOT'] . APP_FOLDER;
+}
+
+define('BASE_PATH', getBasePath());
+define('BASE_URL', getBaseUrl());
+
+?>

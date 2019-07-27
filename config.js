@@ -7,3 +7,5 @@ export const DefaultRoutes =
 ]
 
 export const BaseURL = '/projetos/php2';
+
+export const DefaultContainer = '#main-container';

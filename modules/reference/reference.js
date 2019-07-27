@@ -1,6 +1,12 @@
-import Module from './simple-js-core';
+import {Module} from './../../components.js';
 
-class Reference extends Module
+export class Reference extends Module
 {
-	
+	print()
+	{
+		console.log('Module Reference Working!');
+	}
 }
+
+let a = new Reference();
+a.print();

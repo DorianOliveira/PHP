@@ -5,11 +5,13 @@ export class SimpleJSCore
 	constructor()
 	{
 		this.Helper = new Helper();
-		this.Routes = [];
 		this.Pages = [];
-		this.DefaultRoutes = [];
+
+		this.Routes = new RouteCollection();
+		this.DefaultRoutes = new RouteCollection();
 
 		this.SetDefaultPages();
+		
 	}
 
 	Init()
@@ -21,27 +23,23 @@ export class SimpleJSCore
 	{
 
 		let newPage = new Page(id, title, path);
-		let newRoute = new Route(route, newPage);
-			
-		this.Routes.push(newRoute);
+
+		
+
+		this.Routes.Add(newPage.Title, route, newPage.Path, id);
+
+
 		this.Pages.push(newPage);
 	}
 
 	FindInRoutes(route)
 	{
-		for(let index in this.Routes)
-		{
-			let currentRoute = this.Routes[index];
+		let currentRoute = this.Routes.Find(route);
 
-			console.log(currentRoute);
+		if(currentRoute != null)
+			return currentRoute;
 
-			if(currentRoute.Route == route)
-			{
-				return this.Routes[index];
-			}
-		}
-
-		return this.DefaultRoutes['/404'];
+		return this.DefaultRoutes.Find('/404');
 	}
 
 	Bind(screen, module)
@@ -49,20 +47,14 @@ export class SimpleJSCore
 		
 	}
 
-	
-
 	async GetRoute()
 	{
 		let fullOrigin = this.Helper.GetBaseUrl();
 		let path = location.href.substring(fullOrigin.length);
-		
 		let route = this.FindInRoutes(path);
 
-		
 
 		let htmlTemplate = await this.Helper.LoadTemplate(route.Page.Path);
-
-
 
 		this.Helper.SetHTML('#main-container', htmlTemplate);
 	}
@@ -71,22 +63,76 @@ export class SimpleJSCore
 	{
 		let defaultRoutes = Config.DefaultRoutes;
 
-		for(let routeIndex in this.defaultRoutes)
+		for(let routeIndex in defaultRoutes)
 		{
-			let currentRoute = this.defaultRoutes[routeIndex];
+			let currentRoute = defaultRoutes[routeIndex];
 
-			let route = new Route(routeIndex, currentRoute);
-
-			this.DefaultRoutes[routeIndex] = route;
+			this.DefaultRoutes
+				.Add('', currentRoute.route, currentRoute.path, '');
 		}
 	}
 
 }
 
+class RouteCollection extends Array
+{
+	constructor(...items)
+	{
+		super(...items);
+	}
+	
+	Add(title, route, path, id = '')
+	{
+		let newPage = new Page(id, title, path);
+		let newRoute = new Route(newPage, route, id);
+		
 
+		this.push(newRoute);
+	}
+
+
+	Find(key)
+	{
+		
+		for(const index in this)
+		{
+			let currentRoute = this[index];
+			
+			if(currentRoute.Route == key)
+			{
+				return currentRoute;
+			}
+		}
+
+		return null;
+	}
+
+	Remove(key)
+	{
+		for(const index in this)
+		{
+			let currentRoute = this[index];
+
+			if(currentRoute.Route == key)
+			{
+				this.RemoveAt(index);
+			}
+		}
+	}
+
+	RemoveAt(index)
+	{
+		this.splice(index, 1);
+	}
+
+	Clear()
+	{
+		//this = [];
+	}		
+}
 class Route
 {
-	constructor(route, page, id = '')
+	constructor(page, route, id = '')
 	{
 		this.ID = id;
 		this.Route = route;
@@ -148,6 +194,9 @@ export class Helper
 		let baseUrl = this.GetBaseUrl();
 
 		let finalFetchUrl = baseUrl + path;
+
+
+
 		let response = await fetch(finalFetchUrl);
 		let html = await response.text();
 

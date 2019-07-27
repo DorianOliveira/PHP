@@ -8,7 +8,7 @@ export default class App extends SimpleJSCore
 		super();
 
 		this.Route('home', 'Home', '/', '/screens/home.html');
-		// this.SetRoute('levels', 'Levels', '/levels', '/screens/levels.html');
+		this.Route('levels', 'Levels', '/levels', '/screens/levels.html');
 		// this.SetRoute('reference', 'Reference','/reference', '/screens/reference.html');
 		// this.SetRoute('single-page', 'Home','/single', '/screens/single.html');
 

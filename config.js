@@ -1,9 +1,9 @@
 export const DefaultRoutes = 
-{
-	'/404' : '/404.html',
-	'/301' : '/301.html',
-	'/302' : '/302.html',
-	'/500' : '/500.html'
-}
+[
+	{route: '/404', path: '/404.html'},
+	{route: '/301', path:'/301.html'},
+	{route: '/302', path:'/302.html'},
+	{route: '/500', path:'/500.html'}
+]
 
 export const BaseURL = '/projetos/php2';

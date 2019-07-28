@@ -22,9 +22,12 @@ export class SimpleJSCore
 	Route(id, title, route, path)
 	{
 		let newPage = new Page(id, title, path);
+		let findRoute = this.Routes.FindById(id);
+
+		if(findRoute)
+			throw 'Is not allowed add routes with same id. Id ['+ id + '] has been added!';
+
 		let newRoute = this.Routes.Add(newPage, route, path, id);
-
-
 
 		this.Pages.push(newPage);
 
@@ -64,14 +67,8 @@ export class SimpleJSCore
 		let path = location.href.substring(fullOrigin.length);
 		let route = this.FindInRoutes(path);
 		
-
-
 		route.Page.LoadTemplate();
-		
-
 		route.Page.LoadComponents();
-
-
 	}
 
 

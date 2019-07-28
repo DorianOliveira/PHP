@@ -11,6 +11,9 @@ export default class App extends SimpleJSCore
 		this.Route('reference', 'Reference','/reference', '/screens/reference.html');
 		this.Route('single-page', 'Home','/single', '/screens/single.html');
 
+		//SAMPLE: Calling same template in a different path
+		this.Route('reference2', 'Reference','/reference/levels', '/screens/levels.html');
+
 		//REGISTER MODULE: pageId, moduleId, modulePath, moduleResource
 		this.RegisterModule('reference', 'reference-module', '/modules/reference/teste', 'reference.js');
 		

@@ -26,21 +26,13 @@ export class Component
 		this.Helper = new Helper();
 	}
 
-	
-	GetHtml()
-	{
-		let html = this.Helper.LoadTemplate(this.path);
-		return html;
-	}
-
 	async LoadComponents()
 	{
 		for(const component in this.Components)
 		{
 			let currentComponent = this.Components[component];
 			let fullPath = currentComponent.Path + '/' + currentComponent.Resource;
-			
-			
+						
 			this.Helper.Import(fullPath);
 		}
 	}
@@ -56,9 +48,14 @@ export class Component
 
 export class Module extends Component
 {
+	GetTemplateHTML()
+	{
+		let html = this.Helper.LoadTemplate(this.path);
+		return html;
+	}
 }
 
-export class Page extends Component
+export class Page extends Module
 {
 	constructor(id, title, path, resource, template, components = null)
 	{
@@ -66,10 +63,6 @@ export class Page extends Component
 		this.Template = template;
 	}
 
-	GetTemplate()
-	{
-		return this.GetHtml();
-	}
 }
 
 export class Helper
@@ -125,38 +118,38 @@ class DefaultCollection extends Collections
 	{
 		this.add(item);
 	}
+
+
 }
 
 export class ComponentCollection extends DefaultCollection
 {
-}
-
-export class ModuleCollection extends DefaultCollection
-{
-}
-
-export class PageCollection extends DefaultCollection
-{
-	constructor(...items)
-	{
-		super(...items);
-	}
-
 	FindById(ID)
 	{
 		let index =
-			this.findIndex(function(page){
-				return page.ID == ID;
+			this.findIndex(function(component){
+				return component.ID == ID;
 			});
 
 
 		return this[index];
 
 	}
-
 }
 
-export class RouteCollection extends DefaultCollection
+export class ModuleCollection extends ComponentCollection
+{
+}
+
+export class PageCollection extends ComponentCollection
+{
+	constructor(...items)
+	{
+		super(...items);
+	}
+}
+
+export class RouteCollection extends ComponentCollection
 {
 	constructor(...items)
 	{
@@ -177,9 +170,10 @@ export class RouteCollection extends DefaultCollection
 		for(const index in this)
 		{
 			let currentRoute = this[index];
-			
+
 			if(currentRoute.Route == key)
 			{
+				
 				return currentRoute;
 			}
 		}

@@ -26,7 +26,7 @@ export class SimpleJSCore
 
 		let newPage = new Page(id, title, path);
 
-		let newRoute = this.Routes.Add(newPage.Title, route, newPage.Path, id);
+		let newRoute = this.Routes.Add(newPage, route, path, id);
 		this.Pages.push(newPage);
 
 		return newRoute;

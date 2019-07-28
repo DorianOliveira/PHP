@@ -157,22 +157,14 @@ export class PageCollection extends Collections
 
 	FindById(ID)
 	{
-		for(const index in this)
-			if(this[index].ID == ID)
-				return this[index];
+		let index =
+			this.findIndex(function(page){
+				return page.ID == ID;
+			});
 
-		return null;
-	}
 
-	//TODO: CHECK
-	Find(callBack)
-	{
-		let page = null;
-		for(const index in this)
-			if(callBack(this))
-				return page;
+		return this[index];
 
-		return page;
 	}
 
 }
@@ -184,10 +176,9 @@ export class RouteCollection extends Collections
 		super(...items);
 	}
 	
-	Add(title, route, path, id = '')
+	Add(page, route, path, id = '')
 	{
-		let newPage = new Page(id, title, path);
-		let newRoute = new Route(newPage, route, id);
+		let newRoute = new Route(page, route, id);
 
 		this.add(newRoute);
 

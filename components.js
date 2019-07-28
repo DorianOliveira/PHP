@@ -11,49 +11,36 @@ export class Route
 }
 export class Component
 {
-	constructor(id, title, path, modules = null)
+	constructor(id, title, path, resource, components = null)
 	{
 		this.ID = id;
 		this.Title = title;
 		this.Path = path;
-		
+		this.Resource = resource;
 
-		this.Modules = new ModuleCollection();
+		this.Components = new ComponentCollection();
 
-		if(modules != null)
-			this.Modules = modules;
-
-		this.Resource = '';
-		this.Template = ''
+		if(components != null)
+			this.Components = components;
 
 		this.Helper = new Helper();
 	}
 
-	BindModule(id, path, resource, template)
-	{
-		let newModule = new Module();
-
-		newModule.ID = id;
-		newModule.Path = path;
-		newModule.Resource = resource;
-		newModule.Template = template;
-
-		this.Modules.Add(newModule);
-	}
-
+	
 	GetHtml()
 	{
 		let html = this.Helper.LoadTemplate(this.path);
 		return html;
 	}
 
-	async LoadModules()
+	async LoadComponents()
 	{
-		for(const module in this.Modules)
+		for(const component in this.Components)
 		{
-			let currentModule = this.Modules[module];
-			let fullPath = currentModule.Path + currentModule.Resource;
-
+			let currentComponent = this.Components[component];
+			let fullPath = currentComponent.Path + '/' + currentComponent.Resource;
+			
+			
 			this.Helper.Import(fullPath);
 		}
 	}
@@ -69,22 +56,19 @@ export class Component
 
 export class Module extends Component
 {
-	constructor(id, title, path, modules = null)
+}
+
+export class Page extends Component
+{
+	constructor(id, title, path, resource, template, components = null)
 	{
-		super(id, title, path, modules);
+		super(id, title, path, resource, template, components);
+		this.Template = template;
 	}
 
 	GetTemplate()
 	{
 		return this.GetHtml();
-	}
-}
-
-export class Page extends Component
-{
-	constructor(id, title, path, modules = null)
-	{
-		super(id, title, path, modules);
 	}
 }
 
@@ -112,8 +96,8 @@ export class Helper
 
 	async Import(path)
 	{
-		const dynamicImport = await import(Config.BaseURL + path);
-		const importedModule = dynamicImport.default;
+
+		await import(this.GetBaseUrl() + path);
 	}
 }
 
@@ -135,20 +119,23 @@ class Collections extends Array
 	}
 }
 
-export class ModuleCollection extends Collections
+class DefaultCollection extends Collections
 {
-	constructor(...items)
-	{
-		super(...items);
-	}
-
 	Add(item)
 	{
 		this.add(item);
 	}
 }
 
-export class PageCollection extends Collections
+export class ComponentCollection extends DefaultCollection
+{
+}
+
+export class ModuleCollection extends DefaultCollection
+{
+}
+
+export class PageCollection extends DefaultCollection
 {
 	constructor(...items)
 	{
@@ -169,7 +156,7 @@ export class PageCollection extends Collections
 
 }
 
-export class RouteCollection extends Collections
+export class RouteCollection extends DefaultCollection
 {
 	constructor(...items)
 	{
@@ -184,7 +171,6 @@ export class RouteCollection extends Collections
 
 		return newRoute;
 	}
-
 
 	Find(key)
 	{

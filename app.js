@@ -11,20 +11,13 @@ export default class App extends SimpleJSCore
 		this.Route('reference', 'Reference','/reference', '/screens/reference.html');
 		this.Route('single-page', 'Home','/single', '/screens/single.html');
 
-
-		this.Pages.FindById('reference')
-		 	.BindModule(
-		 		'reference',
-		 		'/modules/reference/',
-		 		'reference.js',
-		 		'reference.html');
-
-
+		//REGISTER MODULE: pageId, moduleId, modulePath, moduleResource
+		this.RegisterModule('reference', 'reference-module', '/modules/reference/teste', 'reference.js');
+		
+		//SAMPLE: Can assign same module to many pages
+		//this.RegisterModule('levels', 'reference-module', '/modules/reference', 'reference.js');
 
 		this.Init();
-
-
-
 	}
 }
 

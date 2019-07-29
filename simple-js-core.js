@@ -1,15 +1,16 @@
 import * as Config from './config.js';
-import {Route, Helper, Component, Module, Page, ModuleCollection, PageCollection, RouteCollection} from './components.js';
+import * as Collections from './collections.js';
+import {Route, Helper, Component, Module, Page} from './components.js';
 
 export class SimpleJSCore
 {
 	constructor()
 	{
 		this.Helper = new Helper();
-		this.Pages = new PageCollection();
-		this.Modules = new ModuleCollection();
-		this.Routes = new RouteCollection();
-		this.DefaultRoutes = new RouteCollection();
+		this.Pages = new Collections.PageCollection();
+		this.Modules = new Collections.ModuleCollection();
+		this.Routes = new Collections.RouteCollection();
+		this.DefaultRoutes = new Collections.RouteCollection();
 
 		this.SetDefaultPages();
 	}
@@ -19,9 +20,9 @@ export class SimpleJSCore
 		this.GetRoute();
 	}
 
-	Route(id, title, route, path)
+	Route(id, title, route, path, resource)
 	{
-		let newPage = new Page(id, title, path);
+		let newPage = new Page(id, title, path, resource);
 		let findRoute = this.Routes.FindById(id);
 
 		if(findRoute)
@@ -45,8 +46,8 @@ export class SimpleJSCore
 		this.Modules.Add(newModule);
 
 		this.Pages
-			.FindById(pageId)
-				.Components.Add(newModule);
+		 	.FindById(pageId)
+		 		.Components.Add(newModule);
 
 	}
 

@@ -1,4 +1,5 @@
 import * as Config from './config.js';
+import * as Collections from './collections.js';
 
 export class Route
 {
@@ -18,7 +19,7 @@ export class Component
 		this.Path = path;
 		this.Resource = resource;
 
-		this.Components = new ComponentCollection();
+		this.Components = new Collections.ComponentCollection();
 
 		if(components != null)
 			this.Components = components;
@@ -30,6 +31,7 @@ export class Component
 	{
 		for(const component in this.Components)
 		{
+
 			let currentComponent = this.Components[component];
 			let fullPath = currentComponent.Path + '/' + currentComponent.Resource;
 						
@@ -48,21 +50,20 @@ export class Component
 
 export class Module extends Component
 {
-	GetTemplateHTML()
+	constructor(id, title, path, resource, ...components)
 	{
-		let html = this.Helper.LoadTemplate(this.path);
-		return html;
+		super(id, title, path, resource, ...components);
+		this.Templates = new Collections.TemplateCollection();
 	}
 }
 
-export class Page extends Module
-{
-	constructor(id, title, path, resource, template, components = null)
-	{
-		super(id, title, path, resource, template, components);
-		this.Template = template;
-	}
 
+export class Page extends Component
+{
+	constructor(id, title, path, resource, ...components)
+	{
+		super(id, title, path, resource, ...components);
+	}
 }
 
 export class Helper
@@ -94,104 +95,11 @@ export class Helper
 	}
 }
 
-class Collections extends Array
+class Template
 {
-	constructor(...items)
+	constructor(id, resource)
 	{
-		super(...items);
-	}
-
-	removeAt(index)
-	{
-		this.splice(index, 1);
-	}
-
-	add(item)
-	{
-		this.push(item);
-	}
-}
-
-class DefaultCollection extends Collections
-{
-	Add(item)
-	{
-		this.add(item);
-	}
-
-
-}
-
-export class ComponentCollection extends DefaultCollection
-{
-	FindById(ID)
-	{
-		let index =
-			this.findIndex(function(component){
-				return component.ID == ID;
-			});
-
-
-		return this[index];
-
-	}
-}
-
-export class ModuleCollection extends ComponentCollection
-{
-}
-
-export class PageCollection extends ComponentCollection
-{
-	constructor(...items)
-	{
-		super(...items);
-	}
-}
-
-export class RouteCollection extends ComponentCollection
-{
-	constructor(...items)
-	{
-		super(...items);
-	}
-	
-	Add(page, route, path, id = '')
-	{
-		let newRoute = new Route(page, route, id);
-
-		this.add(newRoute);
-
-		return newRoute;
-	}
-
-	Find(key)
-	{
-		for(const index in this)
-		{
-			let currentRoute = this[index];
-
-			if(currentRoute.Route == key)
-			{
-				
-				return currentRoute;
-			}
-		}
-
-		return null;
-	}
-
-	//CHECK
-	Remove(key)
-	{
-		for(const index in this)
-		{
-			let currentRoute = this[index];
-
-			if(currentRoute.Route == key)
-			{
-				this.removeAt(index);
-			}
-		}
+		this.ID = id;
+		this.Resource = resource;
 	}
 }

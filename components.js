@@ -55,6 +55,24 @@ export class Module extends Component
 		super(id, title, path, resource, ...components);
 		this.Templates = new Collections.TemplateCollection();
 	}
+
+	GetTemplate(id)
+	{
+		let template = this.Templates.FindByID(id);
+
+		if(template)
+			return template;
+	}
+
+	BindTemplate(id, resource)
+	{
+		let pathTemplate = Config.BaseURL + this.Path + resource;
+		let newTemplate = new Template(id, pathTemplate);
+
+		console.log(this);
+
+		this.Templates.Add(newTemplate);
+	}
 }
 
 
@@ -95,11 +113,21 @@ export class Helper
 	}
 }
 
-class Template
+export class Template
 {
 	constructor(id, resource)
 	{
 		this.ID = id;
 		this.Resource = resource;
+
+		this.Helper = new Helper();
+	}
+
+	async GetHTML()
+	{
+		let response = await this.Helper.Load(this.Resource);
+
+		return await response.text();
+
 	}
 }

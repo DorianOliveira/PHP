@@ -11,9 +11,16 @@ export class Reference extends Module
 		console.log('Module Reference Working!');
 	}
 
+	init()
+	{
+
+	}
+
 	constructor()
 	{
 		super();
+		this.BindTemplate('reference', 'reference.html');
+		
 	}
 }
 

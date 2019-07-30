@@ -66,10 +66,11 @@ export class Module extends Component
 
 	BindTemplate(id, resource)
 	{
-		let pathTemplate = Config.BaseURL + this.Path + resource;
-		let newTemplate = new Template(id, pathTemplate);
+		
 
-		console.log(this);
+		
+
+		let newTemplate = new Template(id, resource);
 
 		this.Templates.Add(newTemplate);
 	}
@@ -125,6 +126,7 @@ export class Template
 
 	async GetHTML()
 	{
+
 		let response = await this.Helper.Load(this.Resource);
 
 		return await response.text();

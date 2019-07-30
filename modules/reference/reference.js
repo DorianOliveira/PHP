@@ -3,12 +3,13 @@ import {ModuloExemplo} from './../../../modules/modulo-exemplo/modulo-exemplo.js
 
 export class Reference extends Module
 {
-	print()
+	async print()
 	{
-		let b = new ModuloExemplo();
 
-		b.print();
-		console.log('Module Reference Working!');
+		let html = await this.Templates[0].GetHTML();
+
+		console.log(this.Templates[0]);
+		//console.log(html);
 	}
 
 	init()
@@ -19,12 +20,17 @@ export class Reference extends Module
 	constructor()
 	{
 		super();
-		this.BindTemplate('reference', 'reference.html');
+
+		this.BindTemplate('reference', '/modules/reference/reference.html');
+
+		//console.log(this);
+
 		
+		this.print();
 	}
+
+
 }
 
-let a = new Reference();
-a.print();
-
+new Reference();
 

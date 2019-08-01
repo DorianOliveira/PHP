@@ -12,18 +12,13 @@ export class Route
 }
 export class Component
 {
-	constructor(id, title, path, resource, components = null)
+	constructor(id, title, path, resource = null)
 	{
 		this.ID = id;
 		this.Title = title;
 		this.Path = path;
 		this.Resource = resource;
-
 		this.Components = new Collections.ComponentCollection();
-
-		if(components != null)
-			this.Components = components;
-
 		this.Helper = new Helper();
 	}
 
@@ -31,7 +26,6 @@ export class Component
 	{
 		for(const component in this.Components)
 		{
-
 			let currentComponent = this.Components[component];
 			let fullPath = currentComponent.Path + '/' + currentComponent.Resource;
 						
@@ -39,20 +33,24 @@ export class Component
 		}
 	}
 
-	async LoadTemplate()
+	GetResourceUrl()
 	{
-		let response = await this.Helper.Load(this.Path);
-		let html = await response.text();
+		return this.Path + '/' + this.Resource;
+	}
 
-		this.Helper.SetHTML(Config.DefaultContainer, html);
+	AddComponent(component)
+	{
+		
+
+		this.Components.Add(component);
 	}
 }
 
 export class Module extends Component
 {
-	constructor(id, title, path, resource, ...components)
+	constructor(id, title, path, resource)
 	{
-		super(id, title, path, resource, ...components);
+		super(id, title, path, resource);
 		this.Templates = new Collections.TemplateCollection();
 	}
 
@@ -62,26 +60,63 @@ export class Module extends Component
 
 		if(template)
 			return template;
+
+		return null;
 	}
 
 	BindTemplate(id, resource)
 	{
-		
-
-		
-
 		let newTemplate = new Template(id, resource);
-
 		this.Templates.Add(newTemplate);
+	}
+
+	LoadTemplate(id)
+	{
+		//TODO
 	}
 }
 
 
 export class Page extends Component
 {
-	constructor(id, title, path, resource, ...components)
+	constructor(id, title, path, resource)
 	{
-		super(id, title, path, resource, ...components);
+		super(id, title, path, resource);
+	}
+
+	async Up()
+	{
+		let response = await this.Helper.Load(this.GetResourceUrl());
+		let html = await response.text();
+
+		this.Helper.SetHTML(Config.DefaultContainer, html);
+	}
+
+	AddComponent(component)
+	{
+		if(component instanceof Page)
+			throw 'A [Page] can´t have another [Page] as a child component.';
+		
+		super.AddComponent(component);
+	}
+	
+}
+
+
+export class Template
+{
+	constructor(id, resource)
+	{
+		this.ID = id;
+		this.Resource = resource;
+
+		this.Helper = new Helper();
+	}
+
+	async GetHTML()
+	{
+		let response = await this.Helper.Load(this.Resource);
+		return await response.text();
 	}
 }
 
@@ -109,27 +144,6 @@ export class Helper
 
 	async Import(path)
 	{
-
 		await import(this.GetBaseUrl() + path);
-	}
-}
-
-export class Template
-{
-	constructor(id, resource)
-	{
-		this.ID = id;
-		this.Resource = resource;
-
-		this.Helper = new Helper();
-	}
-
-	async GetHTML()
-	{
-
-		let response = await this.Helper.Load(this.Resource);
-
-		return await response.text();
-
 	}
 }

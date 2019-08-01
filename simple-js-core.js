@@ -39,16 +39,26 @@ export class SimpleJSCore
 	{
 		let newModule = new Module();
 
-		newModule.ID = moduleId;
-		newModule.Path = modulePath;
-		newModule.Resource = moduleResource;
+		let findPage = this.Pages.FindById(pageId);
 
-		this.Modules.Add(newModule);
+		if(findPage)
+		{
+			let findModule = findPage.Components.FindById(moduleId);
 
-		this.Pages
-		 	.FindById(pageId)
-		 		.Components.Add(newModule);
+			if(findModule)
+			{
+				throw 'Is not allowed more than one module with same id at the same Page. Id ['+ moduleId + '] has been added in the [' + pageId + ']';
+			}
 
+			newModule.ID = moduleId;
+			newModule.Path = modulePath;
+			newModule.Resource = moduleResource;
+
+			this.Pages
+			 	.FindById(pageId)
+			 		.Components.Add(newModule);
+			
+		}
 	}
 
 	FindInRoutes(route)
@@ -68,8 +78,10 @@ export class SimpleJSCore
 		let path = location.href.substring(fullOrigin.length);
 		let route = this.FindInRoutes(path);
 		
-		route.Page.LoadTemplate();
 		route.Page.LoadComponents();
+		route.Page.Up();
+
+		console.log(route);
 	}
 
 

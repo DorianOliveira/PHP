@@ -7,9 +7,6 @@ export class Reference extends Module
 	{
 
 		let html = await this.Templates[0].GetHTML();
-		
-		
-		console.log(html);
 	}
 
 	init()

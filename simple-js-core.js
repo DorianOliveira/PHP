@@ -26,7 +26,7 @@ export class SimpleJSCore
 		let findRoute = this.Routes.FindById(id);
 
 		if(findRoute)
-			throw 'Is not allowed add routes with same id. Id ['+ id + '] has been added!';
+			throw Config.Exceptions.SAME_ROUTE_ID_ERROR(id);
 
 		let newRoute = this.Routes.Add(newPage, route, path, id);
 
@@ -47,7 +47,8 @@ export class SimpleJSCore
 
 			if(findModule)
 			{
-				throw 'Is not allowed more than one module with same id at the same Page. Id ['+ moduleId + '] has been added in the [' + pageId + ']';
+				//throw 'Is not allowed more than one module with same id at the same Page. Id ['+ moduleId + '] has been added in the [' + pageId + ']';
+				throw Config.Exceptions.SAME_MODULE_ID_ERROR(moduleId, pageId);
 			}
 
 			newModule.ID = moduleId;
@@ -58,6 +59,10 @@ export class SimpleJSCore
 			 	.FindById(pageId)
 			 		.Components.Add(newModule);
 			
+		}
+		else
+		{
+			throw Config.Exceptions.PAGE_NOT_FOUND(pageId);
 		}
 	}
 
@@ -80,8 +85,6 @@ export class SimpleJSCore
 		
 		route.Page.LoadComponents();
 		route.Page.Up();
-
-		console.log(route);
 	}
 
 

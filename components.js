@@ -40,8 +40,6 @@ export class Component
 
 	AddComponent(component)
 	{
-		
-
 		this.Components.Add(component);
 	}
 }
@@ -92,6 +90,9 @@ export class Page extends Component
 		this.Helper.SetHTML(Config.DefaultContainer, html);
 	}
 
+	/*
+	* Overload to avoid page add a page as child.
+	*/
 	AddComponent(component)
 	{
 		if(component instanceof Page)

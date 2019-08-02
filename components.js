@@ -103,11 +103,9 @@ export class Page extends Component
 	{
 		let response = await this.Helper.Load(this.GetResourceUrl());
 		let html = await response.text();
-
-		this.Helper.SetHTML(Config.DefaultContainer, html);
-
 		let module = await this.LoadComponents();
-
+		
+		this.Helper.SetHTML(Config.DefaultContainer, html);
 		this.InitModules();
 		
 	}
@@ -123,16 +121,14 @@ export class Page extends Component
 					element,
 					DataSetNames.initModule.dataKey);
 
-
 			let key = dataValue.key;
 			let value = dataValue.value;
-
 			let module = this.Components.FindById(key);
+			let moduleReference = new module.Symbol[value]();
 
-			console.log(new module.Symbol[value]().init());
+			moduleReference.init();
 		}
 	}
-
 
 	/*
 	* Overload to avoid another page been added as a child.
@@ -205,10 +201,7 @@ export class Helper
 
 		if(regex.test(dataSet))
 		{
-			
-
 			var dataValue = dataSet.replace('@', '').split('.');
-
 			var key = dataValue[0];
 			var value = dataValue[1];
 

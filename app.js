@@ -21,7 +21,7 @@ export default class App extends SimpleJSCore
 		this.Init();
 
 		
-		
+		//SAMPLE: Can add a page in another page. This throws a Exception
 		//this.Pages[0].AddComponent(p);
 	}
 }

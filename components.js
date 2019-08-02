@@ -1,6 +1,15 @@
 import * as Config from './config.js';
 import * as Collections from './collections.js';
 
+const DataSetNames = 
+{
+	initModule: {
+		attribute: 'data-init-module',
+		selector: '[data-init-module]',
+		dataKey: 'initModule'
+	}
+}
+
 export class Route
 {
 	constructor(page, route, id = '')
@@ -29,7 +38,8 @@ export class Component
 			let currentComponent = this.Components[component];
 			let fullPath = currentComponent.Path + '/' + currentComponent.Resource;
 						
-			this.Helper.Import(fullPath);
+			let a = await this.Helper.Import(fullPath);
+
 		}
 	}
 
@@ -72,6 +82,11 @@ export class Module extends Component
 	{
 		//TODO
 	}
+
+	init()
+	{
+
+	}
 }
 
 
@@ -88,19 +103,53 @@ export class Page extends Component
 		let html = await response.text();
 
 		this.Helper.SetHTML(Config.DefaultContainer, html);
+
+		this.InitModules();
 	}
 
+	InitModules()
+	{
+		for(const component in this.Components)
+		{
+			let currentComponent = this.Components[component];
+
+			// let dataInitModule = this.Helper.GetElementDataSet(
+			//  	DataSetNames.initModule.selector,
+			//  	DataSetNames.initModule.dataKey);
+
+			let elements = this.Helper.GetElementsBySelector(DataSetNames.initModule.selector);
+
+			for(const element in elements)
+			{
+				let currentElement = elements[element];
+
+				let dataValue =
+					this.Helper.GetDataSet(
+						currentElement,
+						DataSetNames.initModule.dataKey);
+
+				console.log(currentComponent.ID);
+
+				console.log(dataValue[currentComponent.ID]);
+			}
+
+			//let module = this.Components.FindById(dataInitModule);
+
+			
+		}
+	}
+
+
 	/*
-	* Overload to avoid page add a page as child.
+	* Overload to avoid another page been added as a child.
 	*/
 	AddComponent(component)
 	{
 		if(component instanceof Page)
-			throw 'A [Page] can´t have another [Page] as a child component.';
+			throw Config.Exceptions.SAME_PAGE_ID();
 		
 		super.AddComponent(component);
 	}
-	
 }
 
 
@@ -145,6 +194,27 @@ export class Helper
 
 	async Import(path)
 	{
-		await import(this.GetBaseUrl() + path);
+		return await import(this.GetBaseUrl() + path);
+	}
+
+	GetElementsBySelector(selector)
+	{
+		return document.querySelectorAll(selector);
+	}
+
+	GetDataSet(element, dataKey, jsonParse = true)
+	{
+		var stringifyValue = JSON.stringify(element.dataset);
+		var jsonValue = JSON.parse(stringifyValue);
+
+		var value = jsonValue[dataKey];
+
+		//console.log(value);
+		// var jsonValue = JSON.parse(element.dataset[dataKey]);
+
+		// if(jsonParse)
+		// 	return JSON.parse(jsonValue);
+		
+		// return value;
 	}
 }

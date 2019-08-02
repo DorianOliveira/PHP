@@ -15,8 +15,6 @@ export default class App extends SimpleJSCore
 		//REGISTER MODULE: pageId, moduleId, modulePath, moduleResource
 		this.RegisterModule('reference', 'reference-module', '/modules/reference/', 'reference.js');
 		
-
-		
 		//SAMPLE: Can assign same module to many pages
 		//this.RegisterModule('levels', 'reference-module', '/modules/reference', 'reference.js');
 

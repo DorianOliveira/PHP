@@ -2,6 +2,7 @@ import * as Config from './config.js';
 import * as Collections from './collections.js';
 import {Route, Helper, Component, Module, Page} from './components.js';
 
+
 export class SimpleJSCore
 {
 	constructor()

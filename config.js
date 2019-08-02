@@ -28,6 +28,11 @@ export const Exceptions =
 	SAME_ROUTE_ID_ERROR: (routeId) =>
 	{
 		return `Is not allowed add routes with same id. Id [${routeId}] has been added!`.trim();
+	},
+
+	SAME_PAGE_ID: () =>
+	{
+		return `A [Page] can´t have another [Page] as a child component.`;
 	}
 
 	

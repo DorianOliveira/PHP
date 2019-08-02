@@ -84,7 +84,7 @@ export class SimpleJSCore
 		let path = location.href.substring(fullOrigin.length);
 		let route = this.FindInRoutes(path);
 		
-		route.Page.LoadComponents();
+		//route.Page.LoadComponents();
 		route.Page.Up();
 	}
 

@@ -31,15 +31,14 @@ export class Component
 		this.Helper = new Helper();
 	}
 
-	async LoadComponents()
+	async LoadComponents(callBack)
 	{
 		for(const component in this.Components)
 		{
 			let currentComponent = this.Components[component];
 			let fullPath = currentComponent.Path + '/' + currentComponent.Resource;
 						
-			let a = await this.Helper.Import(fullPath);
-
+			this.Components[component].Symbol = await this.Helper.Import(fullPath);
 		}
 	}
 
@@ -83,6 +82,9 @@ export class Module extends Component
 		//TODO
 	}
 
+	/*
+	* To override
+	*/
 	init()
 	{
 
@@ -104,38 +106,30 @@ export class Page extends Component
 
 		this.Helper.SetHTML(Config.DefaultContainer, html);
 
+		let module = await this.LoadComponents();
+
 		this.InitModules();
+		
 	}
 
 	InitModules()
 	{
-		for(const component in this.Components)
+		let elements = this.Helper.GetElementsBySelector(DataSetNames.initModule.selector);
+
+		for(let element of elements)
 		{
-			let currentComponent = this.Components[component];
+			let dataValue =
+				this.Helper.GetDataSetModule(
+					element,
+					DataSetNames.initModule.dataKey);
 
-			// let dataInitModule = this.Helper.GetElementDataSet(
-			//  	DataSetNames.initModule.selector,
-			//  	DataSetNames.initModule.dataKey);
 
-			let elements = this.Helper.GetElementsBySelector(DataSetNames.initModule.selector);
+			let key = dataValue.key;
+			let value = dataValue.value;
 
-			for(const element in elements)
-			{
-				let currentElement = elements[element];
+			let module = this.Components.FindById(key);
 
-				let dataValue =
-					this.Helper.GetDataSet(
-						currentElement,
-						DataSetNames.initModule.dataKey);
-
-				console.log(currentComponent.ID);
-
-				console.log(dataValue[currentComponent.ID]);
-			}
-
-			//let module = this.Components.FindById(dataInitModule);
-
-			
+			console.log(new module.Symbol[value]().init());
 		}
 	}
 
@@ -202,19 +196,26 @@ export class Helper
 		return document.querySelectorAll(selector);
 	}
 
-	GetDataSet(element, dataKey, jsonParse = true)
+	GetDataSetModule(element, dataKey, jsonParse = true)
 	{
-		var stringifyValue = JSON.stringify(element.dataset);
-		var jsonValue = JSON.parse(stringifyValue);
 
-		var value = jsonValue[dataKey];
+		var dataSet = element.dataset[dataKey];
 
-		//console.log(value);
-		// var jsonValue = JSON.parse(element.dataset[dataKey]);
+		var regex = new RegExp('\@[a-zA-Z\_\-\d]*\.');
 
-		// if(jsonParse)
-		// 	return JSON.parse(jsonValue);
-		
-		// return value;
+		if(regex.test(dataSet))
+		{
+			
+
+			var dataValue = dataSet.replace('@', '').split('.');
+
+			var key = dataValue[0];
+			var value = dataValue[1];
+
+			return {key: key, value: value};
+			
+		}
+		return null;
+
 	}
 }
